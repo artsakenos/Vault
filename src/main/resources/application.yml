@@ -1,0 +1,24 @@
+spring:
+  config:
+    import: env.properties
+  application:
+    name: Vault
+  datasource:
+    url: jdbc:h2:file:./db/vault
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+    platform: h2
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+vault:
+  sqlite_path: ./db/wiki_lite/wiki_lite.db
+  key_groq_inf: ${KEY_GROQ_INF}
