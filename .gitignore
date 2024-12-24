@@ -34,7 +34,9 @@ build/
 /.mvn
 
 ### Project ###
-/db
+/db/dump*
+/db/wiki_lite/*
+!/db/wiki_lite/.gitkeep
 /extra
 env.properties
 

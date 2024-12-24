@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tk.artsakenos.iperunits.serial.Jsonable;
 import tk.artsakenos.iperunits.web.SuperHttpClient;
+import tk.artsakenos.vault.libraries.Helper;
 
-import java.io.IOException;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -19,11 +19,11 @@ public class AIService {
     private SuperHttpClient client;
 
     @Value("${vault.key_groq_inf}")
-    private String GROQ_INFORA;
+    private String KEY_GROQ;
 
 
     public static final String GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-    public static final String GROQ_SYSTEM_QUERY_KEYWORD = """
+    public static String GROQ_SYSTEM_QUERY_KEYWORD = """
             Data la query che farà l'utente rispondi con un insieme di keyword che permetteranno di fare una ricerca efficace.
             Non dare spiegazioni, rispondi solo con le keywork che servono per effettuare la ricerca e nient'altro.
             Le parole devono essere separate da spazi, con caratteri minuscoli, non ci devono essere segni di interpunzione.
@@ -34,11 +34,11 @@ public class AIService {
                 "max_tokens": 1024,
                 "messages": [
                     {
-                        "content": SYSTEM,
+                        "content": "SYSTEM",
                         "role": "system"
                     },
                     {
-                        "content": CONTENT,
+                        "content": "CONTENT",
                         "role": "user"
                     }
                 ],
@@ -52,19 +52,18 @@ public class AIService {
     @PostConstruct
     public void init() {
         client = new SuperHttpClient(GROQ_URL, null, null);
+        GROQ_SYSTEM_QUERY_KEYWORD = Helper.getFromResources("/prompts/prompt_keword_extractor.txt");
     }
 
-
-    public String retrieveKeywords(String query) throws IOException {
-
-        String jsonQuestion = Jsonable.toJson(query.replaceAll("\"", "'"), false);
-        String jsonSystem = Jsonable.toJson(GROQ_SYSTEM_QUERY_KEYWORD, false);
+    public String retrieveKeywords(String query) {
+        String jsonQuestion = Helper.jsonizeString(query);
+        String jsonSystem = Helper.jsonizeString(GROQ_SYSTEM_QUERY_KEYWORD);
         String jsonBody = GROQ_JSON_WRAPPER
                 .replaceAll("SYSTEM", jsonSystem)
                 .replaceAll("CONTENT", jsonQuestion);
 
         Map<String, String> postParameters = Map.of(
-                "Authorization", "Bearer " + GROQ_INFORA);
+                "Authorization", "Bearer " + KEY_GROQ);
         SuperHttpClient.SuperResponse superResponse = client.postJson("", jsonBody, postParameters, null);
 
         if (!superResponse.isSuccessful()) {

@@ -1,4 +1,4 @@
-package tk.artsakenos.vault.parser;
+package tk.artsakenos.vault.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

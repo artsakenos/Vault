@@ -91,6 +91,7 @@ Le idee sono:
     SERVICE wikibase:label { bd:serviceParam wikibase:language "it". }
     }
 
+
 [Query simile corrispondente.](https://query.wikidata.org/#SELECT%20%3Farticle%20%3FarticleLabel%20WHERE%20%7B%0A%20%20%3Farticle%20wdt%3AP31%20wd%3AQ13442814.%20%23%20Filtra%20per%20articoli%20di%20Wikipedia%0A%20%20%3Farticle%20wdt%3AP7937%20wd%3AQ21988530.%20%23%20Tag%20Vital%20Articles%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D)
 
 
@@ -107,5 +108,53 @@ For downloading a complete OpenStreetMap (OSM) planet dump, here are your main o
 From planet.openstreetmap.org:
 https://planet.openstreetmap.org/planet/planet-latest.osm.pbf
 
-...
+
+# Test e WIP
+
+    SELECT
+        w.id,
+        w.name,
+        w.abstract_text,
+        bm25(wiki_articles_fts) as score, -- sinonimo di rank
+    FROM wiki_articles w
+        INNER JOIN wiki_articles_fts ON w.id = wiki_articles_fts.rowid
+        WHERE wiki_articles_fts MATCH 'garibaldi OR volcanic'
+    ORDER BY rank ASC
+    LIMIT 10
+
+## Esempi di Pattern Matching
+
+    -- Ricerca con prefisso per varianti di una parola
+    WHERE wiki_articles_fts MATCH 'ital*'  -- matches: italy, italian, italians, italia
+    
+    -- Ricerca di una frase esatta (le parole nell'ordine specificato)
+    WHERE wiki_articles_fts MATCH '"ancient roman empire"'
+    
+    -- Combinazione di exact phrase e wildcard
+    WHERE wiki_articles_fts MATCH '"ancient rom*" OR greec*'
+    
+    -- Ricerca con NEAR operator (parole vicine entro N parole)
+    WHERE wiki_articles_fts MATCH 'pizza NEAR/5 naples'  -- trova pizza a distanza max 5 parole da naples
+    
+    -- Ricerca con AND implicito (devono essere presenti entrambi i termini)
+    WHERE wiki_articles_fts MATCH 'leonardo vinci'
+    
+    -- Ricerca con AND esplicito
+    WHERE wiki_articles_fts MATCH 'leonardo AND vinci'
+    
+    -- Ricerca con NOT (esclude i risultati con il termine specificato)
+    WHERE wiki_articles_fts MATCH 'pyramid NOT egypt'
+    
+    -- Combinazione complessa
+    WHERE wiki_articles_fts MATCH '(archaeolog* OR excavat*) AND rome* NOT (paris OR london)'
+    
+    -- Ricerca su colonne specifiche (se hai configurato FTS con colonne multiple)
+    WHERE wiki_articles_fts MATCH 'name:shakespeare abstract_text:tragedy'
+
+## Soluzione con Embedding
+
+Già implementata negli UltraServices con esempi e test su differenti embedders.
+
+## Soluzione con LLM
+
 
