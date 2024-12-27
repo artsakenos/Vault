@@ -158,3 +158,12 @@ Già implementata negli UltraServices con esempi e test su differenti embedders.
 ## Soluzione con LLM
 
 
+## TODO
+
+- [ ] SqliteService chiama un init come Database initializr, duplicato. Se lo togli rompe l'slite connector però.
+- [ ] Risolvere il problema che nella query mette i ' e rompe la ricerca
+
+# Credits
+
+* [WikiLite](https://github.com/eja/wikilite) by [Eja](https://eja.it)
+* Safe Icon by [Icon 8](https://icons8.com/icon/80779/safe)

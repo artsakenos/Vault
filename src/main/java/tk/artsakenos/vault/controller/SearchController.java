@@ -23,20 +23,23 @@ public class SearchController {
     @Autowired
     private SqliteService sqliteService;
 
-    @GetMapping("/")
-    public String showSearchPage() {
-        return "search";
-    }
-
     @GetMapping("/search")
-    public String performSearch(@RequestParam("query") String query, Model model) {
+    public String performSearch(@RequestParam(value = "query", required = false) String query, Model model) {
+        // Se la query è null o vuota, mostra la pagina di ricerca senza risultati
+        if (query == null || query.trim().isEmpty()) {
+            return "search";
+        }
 
+        // Procedi con la ricerca solo se c'è una query
         String ftsKeywords = aiService.retrieveKeywords(query);
+        ftsKeywords = ftsKeywords.replaceAll("'", "\"");
         log.info("User Query: {}; translated to match clause: {};", query, ftsKeywords);
         List<Map<String, Object>> results = sqliteService.queryDbFts(ftsKeywords);
 
         model.addAttribute("query", query);
         model.addAttribute("results", results);
-        return "search-results";
+        return "search";
     }
+
+
 }

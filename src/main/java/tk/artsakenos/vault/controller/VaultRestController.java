@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tk.artsakenos.vault.service.AIService;
+import tk.artsakenos.vault.service.ParserService;
 import tk.artsakenos.vault.service.SqliteService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,9 @@ public class VaultRestController {
 
     @Autowired
     private SqliteService sqliteService;
+
+    @Autowired
+    private ParserService parserService;
 
     /**
      * Test the Query to Keywords conversion
@@ -46,6 +51,18 @@ public class VaultRestController {
         String ftsKeywords = aiService.retrieveKeywords(query);
         log.info("User Query: {}; translated to match clause: {};", query, ftsKeywords);
         return sqliteService.queryDbFts(ftsKeywords);
+    }
+
+    @GetMapping("/parse_dir")
+    public String parseDir(@RequestParam String dirPath) throws IOException {
+        parserService.parseDir(dirPath);
+        return "DONE";
+    }
+
+    @GetMapping("/parse_file")
+    public String parseFile(@RequestParam String filePath) throws IOException {
+        parserService.parseFile(filePath);
+        return "DONE";
     }
 
 

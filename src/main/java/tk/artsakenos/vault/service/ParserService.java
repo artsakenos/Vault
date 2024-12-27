@@ -2,6 +2,8 @@ package tk.artsakenos.vault.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.artsakenos.iperunits.file.FileManager;
@@ -56,8 +58,11 @@ public class ParserService {
                 String languageId = TextFileParser.getProperty(jsonNode, "/in_language/identifier");
                 String wikiSourceId = TextFileParser.getProperty(jsonNode, "/is_part_of/identifier");
 
+                Document doc = Jsoup.parse(articleHtml);
+                String articleText = doc.body().text();
+
                 sqlite.inserArticle(identifier, name, abstract_text,
-                        articleWiki, articleHtml, imageUrl,
+                        articleWiki, articleHtml, articleText, imageUrl,
                         languageId, wikiSourceId, mainEntityId,
                         propertyCategories, propertyTags);
 
@@ -73,7 +78,7 @@ public class ParserService {
     public void parseDir(String dirPath) throws IOException {
         String[] files = FileManager.getFiles(dirPath, false, new String[]{".ndjson"});
         for (String file : files) {
-            parseFile(file);
+            parseFile(dirPath + "/" + file);
         }
     }
 

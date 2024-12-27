@@ -1,5 +1,7 @@
 package tk.artsakenos.vault.libraries;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +38,13 @@ public class Helper {
                 .replace("\t", "\\\\t")
                 .replace("\"", "\\'")
                 .trim();
+        /*
+        try {
+            return new ObjectMapper().writeValueAsString(input);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+         */
     }
 
 }

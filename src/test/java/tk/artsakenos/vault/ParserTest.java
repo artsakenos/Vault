@@ -18,9 +18,17 @@ public class ParserTest {
 
     @Test
     void testParse() throws IOException {
-        parser.parseFile("./db/dump_simplewiki/simplewiki_namespace_0_3.ndjson");
+        parser.parseFile("./db/dump_simplewiki/simplewiki_namespace_0_6.ndjson");
     }
 
+    @Test
+    void testParseDir() throws IOException {
+        parser.parseDir("./db/dump_scwiki");
+    }
+
+    /**
+     * Check per vedere se recupera il file dalle risorse del main.
+     */
     @Test
     void testPrompt() {
         String fromResources = Helper.getFromResources("/prompts/prompt_keword_extractor.txt");

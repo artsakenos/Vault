@@ -28,19 +28,18 @@ CREATE TABLE IF NOT EXISTS wiki_article_tags (
 -- Tables for FTS --
 
 CREATE VIRTUAL TABLE IF NOT EXISTS wiki_articles_fts USING fts5(
-    name,
-    abstract_text
+    name, abstract_text, body_text
 );
 
 CREATE TRIGGER IF NOT EXISTS wiki_articles_ai AFTER INSERT ON wiki_articles BEGIN
-    INSERT INTO wiki_articles_fts (rowid, name, abstract_text) VALUES (new.id, new.name, new.abstract_text);
+    INSERT INTO wiki_articles_fts (rowid, name, abstract_text, body_text) VALUES (new.id, new.name, new.abstract_text, new.body_text);
 END;
 
 CREATE TRIGGER IF NOT EXISTS wiki_articles_ad AFTER DELETE ON wiki_articles BEGIN
-    INSERT INTO wiki_articles_fts (wiki_articles_fts, rowid, name, abstract_text) VALUES ('delete', old.id, old.name, old.abstract_text);
+    INSERT INTO wiki_articles_fts (wiki_articles_fts, rowid, name, abstract_text, body_text) VALUES ('delete', old.id, old.name, old.abstract_text, old.body_text);
 END;
 
 CREATE TRIGGER IF NOT EXISTS wiki_articles_au AFTER UPDATE ON wiki_articles BEGIN
-    INSERT INTO wiki_articles_fts (wiki_articles_fts, rowid, name, abstract_text) VALUES ('delete', old.id, old.name, old.abstract_text);
-    INSERT INTO wiki_articles_fts (rowid, name, abstract_text) VALUES (new.id, new.name, new.abstract_text);
+    INSERT INTO wiki_articles_fts (wiki_articles_fts, rowid, name, abstract_text, body_text) VALUES ('delete', old.id, old.name, old.abstract_text, old.body_text);
+    INSERT INTO wiki_articles_fts (rowid, name, abstract_text, body_text) VALUES (new.id, new.name, new.abstract_text, new.body_text);
 END;

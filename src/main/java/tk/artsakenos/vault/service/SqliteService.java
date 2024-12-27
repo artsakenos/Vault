@@ -42,6 +42,24 @@ public class SqliteService {
             ORDER BY rank ASC
             LIMIT 10""";
 
+    @PostConstruct
+    public void initializeDatabase() throws SQLException {
+        File dbFile = new File(dbPath);
+        db = new SQLiteConnector(dbPath);
+        if (!dbFile.exists()) {
+            db = new SQLiteConnector(dbPath);
+            log.info("Database {} not found, I'm initializing it.", dbPath);
+            String sqlInit = Helper.getFromResources("/database/init.sql");
+            String[] sqlStatements = sqlInit.split("\n\n");
+            for (String sql : sqlStatements) {
+                sql = sql.trim();
+                if (!sql.isEmpty()) {
+                    db.update(sql);
+                }
+            }
+        }
+    }
+
     public List<Map<String, Object>> queryDbFts(String matchClause) {
         String ftsQuery = this.ftsQuery.replaceAll("MATCH_FTS_CLAUSE", matchClause);
         try {
@@ -51,7 +69,11 @@ public class SqliteService {
         }
     }
 
-    public void inserArticle(int identifier, String name, String abstract_text, String articleWiki, String articleHtml, String imageUrl, String languageId, String wikiSourceId, String mainEntityId, ArrayList<String> propertyCategories, ArrayList<String> propertyTags) {
+
+    public void inserArticle(int identifier, String name, String abstract_text,
+                             String articleWiki, String articleHtml, String articleText,
+                             String imageUrl, String languageId, String wikiSourceId, String mainEntityId,
+                             ArrayList<String> propertyCategories, ArrayList<String> propertyTags) {
         // Insert into DB
         try {
             String insertArticleSQL = """
@@ -61,6 +83,7 @@ public class SqliteService {
                             abstract_text,
                             body_wiki,
                             body_html,
+                            body_text,
                             image_url,
                             language_id,
                             wiki_id,
@@ -75,6 +98,7 @@ public class SqliteService {
                     abstract_text,    // abstract_text
                     articleWiki,      // body_wiki
                     articleHtml,      // body_html
+                    articleText,      // body_html
                     imageUrl,         // image_url
                     languageId,       // language_id
                     wikiSourceId,     // wiki_id

@@ -37,6 +37,7 @@ build/
 /db/dump*
 /db/wiki_lite/*
 !/db/wiki_lite/.gitkeep
+/db/vault.*.db
 /extra
 env.properties
 
