@@ -29,6 +29,7 @@ public class SqliteService {
     @Autowired
     private AIService aiService;
 
+    // Nota che rank è un alias per la funzione score.
     private final String ftsQuery = """
             SELECT
               w.id,
@@ -47,6 +48,12 @@ public class SqliteService {
         File dbFile = new File(dbPath);
         db = new SQLiteConnector(dbPath);
         if (!dbFile.exists()) {
+            // Creo la directory che ospita il db, se non esiste:
+            File dbDir = new File(dbFile.getParent());
+            if (!dbDir.exists() && !dbDir.mkdirs()) {
+                throw new RuntimeException("Failed to create database directory: " + dbDir.getAbsolutePath());
+            }
+
             db = new SQLiteConnector(dbPath);
             log.info("Database {} not found, I'm initializing it.", dbPath);
             String sqlInit = Helper.getFromResources("/database/init.sql");
@@ -88,7 +95,7 @@ public class SqliteService {
                             language_id,
                             wiki_id,
                             entity_id
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """;
 
             int articleResult = getDb().update(
@@ -152,6 +159,15 @@ public class SqliteService {
 
         } catch (Exception e) {
             log.error("Error while inserting data into the database: {}", e.getMessage(), e);
+        }
+    }
+
+    public String getArticleHtml(int articleId) {
+        try {
+            String sql = "SELECT body_html FROM wiki_articles WHERE id = ?";
+            return db.query(sql, articleId).get(0).get("body_html").toString();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

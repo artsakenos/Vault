@@ -18,8 +18,8 @@ import java.util.ArrayList;
 @Service
 public class ParserService {
 
-    public static int counter = 0;
-    public static int rejected = 0;
+    private int counter = 0;
+    private int rejected = 0;
 
     @Autowired
     private SqliteService sqlite;
@@ -31,48 +31,50 @@ public class ParserService {
             @Override
             protected void processLine(String line) {
                 // if (++counter > 100) return;
-
-                JsonNode jsonNode = Jsonable.toJsonNode(line);
-
-                int identifier = Integer.parseInt(TextFileParser.getProperty(jsonNode, "/identifier"));
-                String mainEntityId = TextFileParser.getProperty(jsonNode, "/main_entity/identifier");
-                String abstract_text = TextFileParser.getProperty(jsonNode, "/abstract");
-                String name = TextFileParser.getProperty(jsonNode, "/name");
-
-                ArrayList<String> propertyCategories = TextFileParser.getPropertyCategories(jsonNode);
-                if (propertyCategories.isEmpty()) {
-                    log.warn("No categories found for entity ({}/{}): {}, - {}", identifier, mainEntityId, name, abstract_text);
-                    ++rejected;
-                    return;
-                }
-                ArrayList<String> propertyTags = TextFileParser.getPropertyTags(jsonNode);
-                if (propertyTags.contains("very short new article")) {
-                    log.warn("No interesting Tags found for entity ({}/{}): {}, - {}", identifier, mainEntityId, name, abstract_text);
-                    ++rejected;
-                    return;
-                }
-
-                String imageUrl = TextFileParser.getProperty(jsonNode, "/image/content_url");
-                String articleHtml = TextFileParser.getProperty(jsonNode, "/article_body/html");
-                String articleWiki = TextFileParser.getProperty(jsonNode, "/article_body/wikitext");
-                String languageId = TextFileParser.getProperty(jsonNode, "/in_language/identifier");
-                String wikiSourceId = TextFileParser.getProperty(jsonNode, "/is_part_of/identifier");
-
-                Document doc = Jsoup.parse(articleHtml);
-                String articleText = doc.body().text();
-
-                sqlite.inserArticle(identifier, name, abstract_text,
-                        articleWiki, articleHtml, articleText, imageUrl,
-                        languageId, wikiSourceId, mainEntityId,
-                        propertyCategories, propertyTags);
-
-                System.out.print("➤");
-                if (++counter % 100 == 0) System.out.println(" C" + counter + "/R" + rejected);
+                parseLine(line);
+                if (++counter % 10 == 0) System.out.print("➤");
+                if (counter % 1000 == 0) System.out.println(" C" + counter + "/R" + rejected);
             }
         };
 
         parser.parseFile();
         log.info("Total articles processed: {}. Article Rejected: {}", counter, rejected);
+    }
+
+    private void parseLine(String line) {
+        JsonNode jsonNode = Jsonable.toJsonNode(line);
+
+        int identifier = Integer.parseInt(TextFileParser.getProperty(jsonNode, "/identifier"));
+        String mainEntityId = TextFileParser.getProperty(jsonNode, "/main_entity/identifier");
+        String abstract_text = TextFileParser.getProperty(jsonNode, "/abstract");
+        String name = TextFileParser.getProperty(jsonNode, "/name");
+
+        ArrayList<String> propertyCategories = TextFileParser.getPropertyCategories(jsonNode);
+        if (propertyCategories.isEmpty()) {
+            log.warn("No categories found for entity ({}/{}): {}, - {}", identifier, mainEntityId, name, abstract_text);
+            ++rejected;
+            return;
+        }
+        ArrayList<String> propertyTags = TextFileParser.getPropertyTags(jsonNode);
+        if (propertyTags.contains("very short new article")) {
+            log.warn("No interesting Tags found for entity ({}/{}): {}, - {}", identifier, mainEntityId, name, abstract_text);
+            ++rejected;
+            return;
+        }
+
+        String imageUrl = TextFileParser.getProperty(jsonNode, "/image/content_url");
+        String articleHtml = TextFileParser.getProperty(jsonNode, "/article_body/html");
+        String articleWiki = TextFileParser.getProperty(jsonNode, "/article_body/wikitext");
+        String languageId = TextFileParser.getProperty(jsonNode, "/in_language/identifier");
+        String wikiSourceId = TextFileParser.getProperty(jsonNode, "/is_part_of/identifier");
+
+        Document doc = Jsoup.parse(articleHtml);
+        String articleText = doc.body().text();
+
+        sqlite.inserArticle(identifier, name, abstract_text,
+                articleWiki, articleHtml, articleText, imageUrl,
+                languageId, wikiSourceId, mainEntityId,
+                propertyCategories, propertyTags);
     }
 
     public void parseDir(String dirPath) throws IOException {

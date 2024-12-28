@@ -23,12 +23,6 @@ public class AIService {
 
 
     public static final String GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-    public static String GROQ_SYSTEM_QUERY_KEYWORD = """
-            Data la query che farà l'utente rispondi con un insieme di keyword che permetteranno di fare una ricerca efficace.
-            Non dare spiegazioni, rispondi solo con le keywork che servono per effettuare la ricerca e nient'altro.
-            Le parole devono essere separate da spazi, con caratteri minuscoli, non ci devono essere segni di interpunzione.
-            Importante: Le parole nella risposta devono essere in inglese!.
-            """.replaceAll("\n", "\\\\n").trim();
     public static final String GROQ_JSON_WRAPPER = """
             {
                 "max_tokens": 1024,
@@ -52,12 +46,11 @@ public class AIService {
     @PostConstruct
     public void init() {
         client = new SuperHttpClient(GROQ_URL, null, null);
-        GROQ_SYSTEM_QUERY_KEYWORD = Helper.getFromResources("/prompts/prompt_keword_extractor.txt");
     }
 
     public String retrieveKeywords(String query) {
         String jsonQuestion = Helper.jsonizeString(query);
-        String jsonSystem = Helper.jsonizeString(GROQ_SYSTEM_QUERY_KEYWORD);
+        String jsonSystem = Helper.jsonizeString(Helper.getFromResources("/prompts/prompt_keword_extractor.txt"));
         String jsonBody = GROQ_JSON_WRAPPER
                 .replaceAll("SYSTEM", jsonSystem)
                 .replaceAll("CONTENT", jsonQuestion);

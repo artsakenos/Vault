@@ -9,6 +9,15 @@ Un DB H2 viene utilizzato per logging e per memorizzare le configurazioni.
 Il progetto è un clone in Java creato a partire da [WikiLite](https://github.com/eja/wikilite) 
 per fare qualche esperimento sui dati.
 
+## Setup
+* Nota: i seguenti step sono da automatizzare.
+* Scaricare un dump ad esempio 
+  * cd db/dump_simplewiki
+  * wget https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/simplewiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz
+  * tar -xzvf ...
+* Fare il parsing della directory http://localhost:8181/vault/parse_dir?dirPath=./db/dump_simplewiki
+* O di un file http://localhost:8181/vault/parse_file?filePath=./db/dump_simplewiki/simplewiki_namespace_0_5.ndjson
+
 
 # API
 
