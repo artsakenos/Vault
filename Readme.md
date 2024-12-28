@@ -9,6 +9,20 @@ Un DB H2 viene utilizzato per logging e per memorizzare le configurazioni.
 Il progetto è un clone in Java creato a partire da [WikiLite](https://github.com/eja/wikilite) 
 per fare qualche esperimento sui dati.
 
+## Setup
+* Nota: i seguenti step sono da automatizzare.
+* Scaricare un dump ad esempio 
+  * cd db/dump_simplewiki
+  * wget https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/simplewiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz
+  * tar -xzvf ...
+* Fare il parsing della directory http://localhost:8181/vault/parse_dir?dirPath=./db/dump_simplewiki
+* O di un file http://localhost:8181/vault/parse_file?filePath=./db/dump_simplewiki/simplewiki_namespace_0_5.ndjson
+
+## Utilizzo
+* Effettuare la ricerca, e.g., http://localhost:8181/vault/search?query=mazzini
+
+[![Watch the Demo](https://img.youtube.com/vi/m3wewJOdCUs/0.jpg)](https://www.youtube.com/watch?v=m3wewJOdCUs&ab_channel=AndreaAddis)
+
 
 # API
 
@@ -91,6 +105,7 @@ Le idee sono:
     SERVICE wikibase:label { bd:serviceParam wikibase:language "it". }
     }
 
+
 [Query simile corrispondente.](https://query.wikidata.org/#SELECT%20%3Farticle%20%3FarticleLabel%20WHERE%20%7B%0A%20%20%3Farticle%20wdt%3AP31%20wd%3AQ13442814.%20%23%20Filtra%20per%20articoli%20di%20Wikipedia%0A%20%20%3Farticle%20wdt%3AP7937%20wd%3AQ21988530.%20%23%20Tag%20Vital%20Articles%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D)
 
 
@@ -107,5 +122,62 @@ For downloading a complete OpenStreetMap (OSM) planet dump, here are your main o
 From planet.openstreetmap.org:
 https://planet.openstreetmap.org/planet/planet-latest.osm.pbf
 
-...
 
+# Test e WIP
+
+    SELECT
+        w.id,
+        w.name,
+        w.abstract_text,
+        bm25(wiki_articles_fts) as score, -- sinonimo di rank
+    FROM wiki_articles w
+        INNER JOIN wiki_articles_fts ON w.id = wiki_articles_fts.rowid
+        WHERE wiki_articles_fts MATCH 'garibaldi OR volcanic'
+    ORDER BY rank ASC
+    LIMIT 10
+
+## Esempi di Pattern Matching
+
+    -- Ricerca con prefisso per varianti di una parola
+    WHERE wiki_articles_fts MATCH 'ital*'  -- matches: italy, italian, italians, italia
+    
+    -- Ricerca di una frase esatta (le parole nell'ordine specificato)
+    WHERE wiki_articles_fts MATCH '"ancient roman empire"'
+    
+    -- Combinazione di exact phrase e wildcard
+    WHERE wiki_articles_fts MATCH '"ancient rom*" OR greec*'
+    
+    -- Ricerca con NEAR operator (parole vicine entro N parole)
+    WHERE wiki_articles_fts MATCH 'pizza NEAR/5 naples'  -- trova pizza a distanza max 5 parole da naples
+    
+    -- Ricerca con AND implicito (devono essere presenti entrambi i termini)
+    WHERE wiki_articles_fts MATCH 'leonardo vinci'
+    
+    -- Ricerca con AND esplicito
+    WHERE wiki_articles_fts MATCH 'leonardo AND vinci'
+    
+    -- Ricerca con NOT (esclude i risultati con il termine specificato)
+    WHERE wiki_articles_fts MATCH 'pyramid NOT egypt'
+    
+    -- Combinazione complessa
+    WHERE wiki_articles_fts MATCH '(archaeolog* OR excavat*) AND rome* NOT (paris OR london)'
+    
+    -- Ricerca su colonne specifiche (se hai configurato FTS con colonne multiple)
+    WHERE wiki_articles_fts MATCH 'name:shakespeare abstract_text:tragedy'
+
+## Soluzione con Embedding
+
+Già implementata negli UltraServices con esempi e test su differenti embedders.
+
+## Soluzione con LLM
+
+
+## TODO
+
+- [ ] SqliteService chiama un init come Database initializr, duplicato. Se lo togli rompe l'slite connector però.
+- [ ] Risolvere il problema che nella query mette i ' e rompe la ricerca
+
+# Credits
+
+* [WikiLite](https://github.com/eja/wikilite) by [Eja](https://eja.it)
+* Safe Icon by [Icon 8](https://icons8.com/icon/80779/safe)
