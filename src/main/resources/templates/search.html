@@ -24,7 +24,10 @@
     <!-- Risultati della ricerca (mostrati solo se ci sono risultati) -->
     <div th:if="${results != null}">
         <h2 class="mb-4">Results</h2>
-        <p class="mb-4"><strong>Query:</strong> <span th:text="${query}"></span></p>
+        <p class="mb-4">
+            <strong>Query:</strong> <span th:text="${query}"></span><br>
+            <strong>Time taken:</strong> <span th:text="${#numbers.formatDecimal(duration / 1000.0, 1, 2)}"></span> seconds
+        </p>
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
@@ -38,12 +41,60 @@
             <tr th:each="result : ${results}">
                 <td th:text="${result['name']}"></td>
                 <td th:text="${result['rank']}"></td>
-                <td th:text="${result['id']}"></td>
+                <td>
+                    <a href="#" class="article-link" th:data-id="${result['id']}" th:text="${result['id']}"></a>
+                </td>
                 <td th:text="${result['abstract_text']}"></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- Modal per il popup -->
+<div class="modal fade" id="articleModal" tabindex="-1" aria-labelledby="articleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="articleModalLabel">Article Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="articleContent">
+                <!-- Il contenuto dell'articolo verrà inserito qui -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Includi Bootstrap JS e le dipendenze -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Script per gestire il click sugli ID e mostrare il popup -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const articleLinks = document.querySelectorAll('.article-link');
+        const modal = new bootstrap.Modal(document.getElementById('articleModal'));
+
+        articleLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const articleId = this.getAttribute('data-id');
+
+                // Fetch dell'articolo
+                fetch(`/article_body/${articleId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('articleContent').innerHTML = html;
+                        modal.show();
+                    })
+                    .catch(error => console.error('Error fetching article:', error));
+            });
+        });
+    });
+</script>
 </body>
 </html>

@@ -18,6 +18,11 @@ per fare qualche esperimento sui dati.
 * Fare il parsing della directory http://localhost:8181/vault/parse_dir?dirPath=./db/dump_simplewiki
 * O di un file http://localhost:8181/vault/parse_file?filePath=./db/dump_simplewiki/simplewiki_namespace_0_5.ndjson
 
+## Utilizzo
+* Effettuare la ricerca, e.g., http://localhost:8181/vault/search?query=mazzini
+
+[![Watch the Demo](https://img.youtube.com/vi/m3wewJOdCUs/0.jpg)](https://www.youtube.com/watch?v=m3wewJOdCUs&ab_channel=AndreaAddis)
+
 
 # API
 

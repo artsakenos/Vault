@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import tk.artsakenos.vault.model.UserData;
 import tk.artsakenos.vault.service.AIService;
+import tk.artsakenos.vault.service.LogService;
 import tk.artsakenos.vault.service.ParserService;
 import tk.artsakenos.vault.service.SqliteService;
 
@@ -28,6 +30,9 @@ public class VaultRestController {
 
     @Autowired
     private ParserService parserService;
+
+    @Autowired
+    private LogService logService;
 
     /**
      * Test the Query to Keywords conversion
@@ -63,6 +68,12 @@ public class VaultRestController {
     public String parseFile(@RequestParam String filePath) throws IOException {
         parserService.parseFile(filePath);
         return "DONE";
+    }
+
+
+    @GetMapping("/logs")
+    public List<UserData> getLogs() {
+        return logService.getLastLogs();
     }
 
 
