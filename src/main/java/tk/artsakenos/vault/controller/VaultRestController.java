@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tk.artsakenos.vault.model.UserData;
 import tk.artsakenos.vault.service.AIService;
 import tk.artsakenos.vault.service.LogService;
-import tk.artsakenos.vault.service.ParserService;
+import tk.artsakenos.vault.service.ParserWikiService;
 import tk.artsakenos.vault.service.SqliteService;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class VaultRestController {
     private SqliteService sqliteService;
 
     @Autowired
-    private ParserService parserService;
+    private ParserWikiService parserService;
 
     @Autowired
     private LogService logService;
@@ -55,7 +55,8 @@ public class VaultRestController {
     public List<Map<String, Object>> queryVault(@RequestParam String query) {
         String ftsKeywords = aiService.retrieveKeywords(query);
         log.info("User Query: {}; translated to match clause: {};", query, ftsKeywords);
-        return sqliteService.queryDbFts(ftsKeywords);
+        // return sqliteService.queryDbFts(ftsKeywords);
+        return null;
     }
 
     @GetMapping("/parse_dir")

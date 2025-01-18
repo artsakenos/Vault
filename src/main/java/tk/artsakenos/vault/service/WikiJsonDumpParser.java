@@ -9,11 +9,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-public abstract class TextFileParser {
+public abstract class WikiJsonDumpParser {
 
     private final Path filePath;
 
-    public TextFileParser(Path filePath) {
+    public WikiJsonDumpParser(Path filePath) {
         this.filePath = filePath;
     }
 

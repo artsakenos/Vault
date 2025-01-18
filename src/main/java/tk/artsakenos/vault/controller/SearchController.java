@@ -44,10 +44,8 @@ public class SearchController {
         ftsKeywords = ftsKeywords.replaceAll("'", "\"");
         log.info("User Query: {}; translated to match clause: {};", query, ftsKeywords);
         chronometer.start();
-        List<Map<String, Object>> results = sqliteService.queryDbFts(ftsKeywords);
+        List<Map<String, Object>> results = sqliteService.queryVault(ftsKeywords);
         long duration = chronometer.getTimePassedMillisecs();
-
-        // Aggiungi i risultati e la query al modello
         model.addAttribute("query", query);
         model.addAttribute("results", results);
         model.addAttribute("duration", duration);

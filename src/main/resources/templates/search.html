@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/styles.css" rel="stylesheet">
     <link rel="icon" type="image/png" th:href="@{/images/icons8-safe-96.png}"/>
 </head>
 <body class="bg-light">
+<!-- Include Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
 <div class="container mt-5">
     <h1 class="mb-4">Search</h1>
 
-    <!-- Form di ricerca -->
+    <!-- Search Form -->
     <form action="/search" method="get" class="mb-5">
         <div class="input-group">
             <input type="text"
@@ -21,7 +29,7 @@
         </div>
     </form>
 
-    <!-- Risultati della ricerca (mostrati solo se ci sono risultati) -->
+    <!-- Search Results (displayed only if there are results) -->
     <div th:if="${results != null}">
         <h2 class="mb-4">Results</h2>
         <p class="mb-4">
@@ -44,14 +52,14 @@
                 <td>
                     <a href="#" class="article-link" th:data-id="${result['id']}" th:text="${result['id']}"></a>
                 </td>
-                <td th:text="${result['abstract_text']}"></td>
+                <td th:text="${result['chunk_text']}"></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Modal per il popup -->
+<!-- Modal for Popup -->
 <div class="modal fade" id="articleModal" tabindex="-1" aria-labelledby="articleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -60,7 +68,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="articleContent">
-                <!-- Il contenuto dell'articolo verrà inserito qui -->
+                <!-- Article content will be inserted here -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -69,11 +77,14 @@
     </div>
 </div>
 
-<!-- Includi Bootstrap JS e le dipendenze -->
+<!-- Include Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap JS and Dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
-<!-- Script per gestire il click sugli ID e mostrare il popup -->
+<!-- Script to handle ID clicks and show the popup -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const articleLinks = document.querySelectorAll('.article-link');
@@ -84,7 +95,7 @@
                 event.preventDefault();
                 const articleId = this.getAttribute('data-id');
 
-                // Fetch dell'articolo
+                // Fetch the article
                 fetch(`/article_body/${articleId}`)
                     .then(response => response.text())
                     .then(html => {

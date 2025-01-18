@@ -1,20 +1,29 @@
 package tk.artsakenos.vault;
 
+import ai.djl.MalformedModelException;
+import ai.djl.repository.zoo.ModelNotFoundException;
+import ai.djl.translate.TranslateException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import tk.artsakenos.vault.libraries.EmbeddingModel;
 import tk.artsakenos.vault.libraries.Helper;
-import tk.artsakenos.vault.service.ParserService;
+import tk.artsakenos.vault.service.EmbeddingService;
+import tk.artsakenos.vault.service.ParserWikiService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @Disabled
 @SpringBootTest
 public class ParserTest {
 
     @Autowired
-    private ParserService parser;
+    private ParserWikiService parser;
+
+    @Autowired
+    private EmbeddingService embeddingService;
 
     @Test
     void testParse() throws IOException {
@@ -23,7 +32,7 @@ public class ParserTest {
 
     @Test
     void testParseDir() throws IOException {
-        parser.parseDir("./db/dump_scwiki");
+        parser.parseDir("./db/dumps/dump_scwiki");
     }
 
     /**
@@ -33,6 +42,11 @@ public class ParserTest {
     void testPrompt() {
         String fromResources = Helper.getFromResources("/prompts/prompt_keword_extractor.txt");
         System.out.println(fromResources);
+    }
+
+    @Test
+    void testAddEmbeddings() throws SQLException, TranslateException, ModelNotFoundException, MalformedModelException, IOException {
+        embeddingService.addEmbeddings(EmbeddingModel.MODEL_DEFAULT.getName());
     }
 
 }

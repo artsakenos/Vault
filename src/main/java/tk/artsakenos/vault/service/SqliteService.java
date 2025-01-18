@@ -6,57 +6,44 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import tk.artsakenos.iperunits.database.SQLiteConnector;
 import tk.artsakenos.vault.libraries.Helper;
+import tk.artsakenos.vault.libraries.SQLiteWrapper;
+import tk.artsakenos.vault.model.Article;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"unused", "FieldCanBeLocal"})
-@Service
+@SuppressWarnings("unused")
 @Slf4j
+@Service
 public class SqliteService {
 
     @Value("${vault.sqlite_path}")
     private String dbPath;
 
     @Getter
-    private SQLiteConnector db;
+    private SQLiteWrapper db;
 
     @Autowired
     private AIService aiService;
 
-    // Nota che rank è un alias per la funzione score.
-    private final String ftsQuery = """
-            SELECT
-              w.id,
-              w.name,
-              w.abstract_text,
-              bm25(wiki_articles_fts) as score,
-              rank
-            FROM wiki_articles w
-            INNER JOIN wiki_articles_fts ON w.id = wiki_articles_fts.rowid
-            WHERE wiki_articles_fts MATCH 'MATCH_FTS_CLAUSE'
-            ORDER BY rank ASC
-            LIMIT 10""";
-
     @PostConstruct
     public void initializeDatabase() throws SQLException {
         File dbFile = new File(dbPath);
-        db = new SQLiteConnector(dbPath);
         if (!dbFile.exists()) {
-            // Creo la directory che ospita il db, se non esiste:
+            // Create the directory for the database if it doesn't exist
             File dbDir = new File(dbFile.getParent());
             if (!dbDir.exists() && !dbDir.mkdirs()) {
                 throw new RuntimeException("Failed to create database directory: " + dbDir.getAbsolutePath());
             }
-
-            db = new SQLiteConnector(dbPath);
-            log.info("Database {} not found, I'm initializing it.", dbPath);
-            String sqlInit = Helper.getFromResources("/database/init.sql");
+        }
+        db = new SQLiteWrapper(dbPath);
+        if (!db.tableExists("articles")) {
+            log.info("Database {} not initialized, I'm doing it.", dbPath);
+            String sqlInit = Helper.getFromResources("/database/vault_init.sql");
             String[] sqlStatements = sqlInit.split("\n\n");
             for (String sql : sqlStatements) {
                 sql = sql.trim();
@@ -65,111 +52,161 @@ public class SqliteService {
                 }
             }
         }
+
     }
 
-    public List<Map<String, Object>> queryDbFts(String matchClause) {
-        String ftsQuery = this.ftsQuery.replaceAll("MATCH_FTS_CLAUSE", matchClause);
+    public void insert(Article article) {
+        // Base article insert - single record, no need for transaction
+        String insertArticleSQL = """
+                INSERT OR REPLACE INTO articles (source, id, name, description)
+                VALUES (?, ?, ?, ?)
+                """;
+
         try {
-            return db.query(ftsQuery);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public void inserArticle(int identifier, String name, String abstract_text,
-                             String articleWiki, String articleHtml, String articleText,
-                             String imageUrl, String languageId, String wikiSourceId, String mainEntityId,
-                             ArrayList<String> propertyCategories, ArrayList<String> propertyTags) {
-        // Insert into DB
-        try {
-            String insertArticleSQL = """
-                        INSERT OR REPLACE INTO wiki_articles (
-                            id,
-                            name,
-                            abstract_text,
-                            body_wiki,
-                            body_html,
-                            body_text,
-                            image_url,
-                            language_id,
-                            wiki_id,
-                            entity_id
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """;
-
-            int articleResult = getDb().update(
-                    insertArticleSQL,
-                    identifier,       // id
-                    name,             // name
-                    abstract_text,    // abstract_text
-                    articleWiki,      // body_wiki
-                    articleHtml,      // body_html
-                    articleText,      // body_html
-                    imageUrl,         // image_url
-                    languageId,       // language_id
-                    wikiSourceId,     // wiki_id
-                    mainEntityId      // entity_id
+            db.update(insertArticleSQL,
+                    article.getSource(),
+                    article.getId(),
+                    article.getName(),
+                    article.getDescription()
             );
-
-            if (articleResult == 0) {
-                log.warn("Failed to insert or update article: {}, - {}", identifier, name);
-                return;
-            }
-
-            // Inserimento nella tabella wiki_article_categories
-            if (!propertyCategories.isEmpty()) {
-                boolean categoryTransactionSuccess = getDb().executeTransaction(connection -> {
-                    try (var stmt = connection.prepareStatement(
-                            "INSERT OR IGNORE INTO wiki_article_categories (article_id, category) VALUES (?, ?)"
-                    )) {
-                        for (String category : propertyCategories) {
-                            stmt.setInt(1, identifier);  // article_id
-                            stmt.setString(2, category); // category
-                            stmt.executeUpdate();
-                        }
-                    }
-                });
-
-                if (!categoryTransactionSuccess) {
-                    log.warn("Failed to insert categories for article: {}, - {}", identifier, name);
-                }
-            }
-
-            // Inserimento nella tabella wiki_article_tags
-            if (!propertyTags.isEmpty()) {
-                boolean tagTransactionSuccess = getDb().executeTransaction(connection -> {
-                    try (var stmt = connection.prepareStatement(
-                            "INSERT OR IGNORE INTO wiki_article_tags (article_id, tag) VALUES (?, ?)"
-                    )) {
-                        for (String tag : propertyTags) {
-                            stmt.setInt(1, identifier);  // article_id
-                            stmt.setString(2, tag);      // tag
-                            stmt.executeUpdate();
-                        }
-                    }
-                });
-
-                if (!tagTransactionSuccess) {
-                    log.warn("Failed to insert tags for article: {}, - {}", identifier, name);
-                }
-            }
-
-            // log.info("Successfully inserted article and related data for: {} - {}", identifier, name);
-
-        } catch (Exception e) {
-            log.error("Error while inserting data into the database: {}", e.getMessage(), e);
-        }
-    }
-
-    public String getArticleHtml(int articleId) {
-        try {
-            String sql = "SELECT body_html FROM wiki_articles WHERE id = ?";
-            return db.query(sql, articleId).get(0).get("body_html").toString();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        // Categories batch insert
+        if (article.getCategories() != null && !article.getCategories().isEmpty()) {
+            executeTransaction(connection -> {
+                try (var stmt = connection.prepareStatement("""
+                        INSERT OR REPLACE INTO article_categories (source, article_id, category)
+                        VALUES (?, ?, ?)
+                        """)) {
+                    for (String category : article.getCategories()) {
+                        stmt.setString(1, article.getSource());
+                        stmt.setString(2, article.getId());
+                        stmt.setString(3, category);
+                        stmt.addBatch();
+                    }
+                    stmt.executeBatch();
+                }
+            });
+        }
+
+        // Tags batch insert
+        if (article.getTags() != null && !article.getTags().isEmpty()) {
+            executeTransaction(connection -> {
+                try (var stmt = connection.prepareStatement("""
+                        INSERT OR REPLACE INTO article_tags (source, article_id, tag)
+                        VALUES (?, ?, ?)
+                        """)) {
+                    for (String tag : article.getTags()) {
+                        stmt.setString(1, article.getSource());
+                        stmt.setString(2, article.getId());
+                        stmt.setString(3, tag);
+                        stmt.addBatch();
+                    }
+                    stmt.executeBatch();
+                }
+            });
+        }
+
+        // Metadata batch insert
+        if (article.getMetadata() != null && !article.getMetadata().isEmpty()) {
+            executeTransaction(connection -> {
+                try (var stmt = connection.prepareStatement("""
+                        INSERT OR REPLACE INTO article_meta (source, article_id, meta_type, meta_value)
+                        VALUES (?, ?, ?, ?)
+                        """)) {
+                    for (Map.Entry<String, String> meta : article.getMetadata().entrySet()) {
+                        stmt.setString(1, article.getSource());
+                        stmt.setString(2, article.getId());
+                        stmt.setString(3, meta.getKey());
+                        stmt.setString(4, meta.getValue());
+                        stmt.addBatch();
+                    }
+                    stmt.executeBatch();
+                }
+            });
+        }
+
+        // Chunks batch insert
+        if (article.getChunks() != null && !article.getChunks().isEmpty()) {
+            // Insert chunks
+            executeTransaction(connection -> {
+                try (var stmt = connection.prepareStatement("""
+                        INSERT OR REPLACE INTO article_chunks
+                        (source, article_id, chunk_type, chunk_section, chunk_id, chunk_count, chunk_text)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        """)) {
+                    for (Article.ArticleChunk chunk : article.getChunks()) {
+                        stmt.setString(1, article.getSource());
+                        stmt.setString(2, article.getId());
+                        stmt.setString(3, chunk.getChunkType());
+                        stmt.setString(4, chunk.getChunkSection());
+                        stmt.setInt(5, chunk.getChunkId());
+                        stmt.setInt(6, chunk.getChunkCount());
+                        stmt.setString(7, chunk.getChunkText());
+                        stmt.addBatch();
+                    }
+                    stmt.executeBatch();
+                }
+            });
+
+            // Insert embeddings for chunks
+            executeTransaction(connection -> {
+                try (var stmt = connection.prepareStatement("""
+                        INSERT OR REPLACE INTO article_embeddings
+                        (source, article_id, chunk_type, chunk_id, embedding_model, embedding_vector)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """)) {
+                    for (Article.ArticleChunk chunk : article.getChunks()) {
+                        if (chunk.getEmbeddings() != null) {
+                            for (Article.ChunkEmbedding embedding : chunk.getEmbeddings()) {
+                                stmt.setString(1, article.getSource());
+                                stmt.setString(2, article.getId());
+                                stmt.setString(3, chunk.getChunkType());
+                                stmt.setInt(4, chunk.getChunkId());
+                                stmt.setString(5, embedding.getEmbeddingModel());
+                                stmt.setBytes(6, embedding.getEmbeddingVector());
+                                stmt.addBatch();
+                            }
+                        }
+                    }
+                    stmt.executeBatch();
+                }
+            });
+        }
     }
 
 
+    private void executeTransaction(TransactionCallback callback) {
+        Connection connection;
+        connection = db.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            callback.doInTransaction(connection);
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public String getArticleHtml(int id) {
+        return "Ciao, Cipollino!";
+    }
+
+    @FunctionalInterface
+    private interface TransactionCallback {
+        void doInTransaction(Connection connection) throws SQLException;
+    }
+
+    public List<Map<String, Object>> queryVault(String matchClause) {
+        String sqlQuery = Helper.getFromResources("/database/vault_fts_query.sql");
+        try {
+            return db.query(sqlQuery, matchClause);
+        } catch (SQLException e) {
+            log.error("Error while querying the vault: {}", e.getLocalizedMessage());
+            return null;
+        }
+    }
 }
