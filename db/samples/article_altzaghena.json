@@ -1,0 +1,127 @@
+{
+  "abstract": "Altzaghèna (Alzachena est una bidda de 12.552 abitantes in sa Provìntzia de su Nord-Est Sardigna.",
+  "additional_entities": [
+    {
+      "aspects": [
+        "C.P625",
+        "S",
+        "T"
+      ],
+      "identifier": "Q186538",
+      "url": "https://www.wikidata.org/entity/Q186538"
+    }
+  ],
+  "article_body": {
+    "html": "<!DOCTYPE html>\n<html prefix=\"dc: http://purl.org/dc/terms/ </body></html>",
+    "wikitext": "{{coord|format=dms|display=title}}\n{{Tmp|Bidda}}{{s/geografia}}{{Variant|LOG}}\n[[File:Arzachena, "
+  },
+  "categories": [
+    {
+      "name": "Categoria:Pàginas chi esigint su template Bidda",
+      "url": "https://sc.wikipedia.org/wiki/Categoria:Pàginas_chi_esigint_su_template_Bidda"
+    },
+    {
+      "name": "Categoria:Stub geografia",
+      "url": "https://sc.wikipedia.org/wiki/Categoria:Stub_geografia"
+    },
+    {
+      "name": "Categoria:Logudoresu",
+      "url": "https://sc.wikipedia.org/wiki/Categoria:Logudoresu"
+    },
+    {
+      "name": "Categoria:Comunes de sa provìntzia de su Nord-Est Sardigna",
+      "url": "https://sc.wikipedia.org/wiki/Categoria:Comunes_de_sa_provìntzia_de_su_Nord-Est_Sardigna"
+    },
+    {
+      "name": "Categoria:Gaddura",
+      "url": "https://sc.wikipedia.org/wiki/Categoria:Gaddura"
+    },
+    {
+      "name": "Categoria:Coordinadas ausentes ma presentes in Wikidata",
+      "url": "https://sc.wikipedia.org/wiki/Categoria:Coordinadas_ausentes_ma_presentes_in_Wikidata"
+    }
+  ],
+  "date_modified": "2023-09-16T17:09:36Z",
+  "event": {
+    "date_created": "2024-10-10T21:28:14.30126Z",
+    "date_published": "2024-10-10T21:28:14.30126Z",
+    "identifier": "9daa630d-386b-4750-ae74-56bf94206162",
+    "type": "update"
+  },
+  "identifier": 4099,
+  "image": {
+    "content_url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Arzachena%2C_panorama_%2801%29.jpg",
+    "height": 3163,
+    "width": 4753
+  },
+  "in_language": {
+    "identifier": "sc"
+  },
+  "is_part_of": {
+    "identifier": "scwiki",
+    "url": "https://sc.wikipedia.org"
+  },
+  "license": [
+    {
+      "identifier": "CC-BY-SA-4.0",
+      "name": "Creative Commons Attribution-ShareAlike License 4.0",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  ],
+  "main_entity": {
+    "identifier": "Q186538",
+    "url": "https://www.wikidata.org/entity/Q186538"
+  },
+  "name": "Altzaghèna",
+  "namespace": {
+    "identifier": 0
+  },
+  "redirects": [
+    {
+      "name": "Alzachena",
+      "url": "https://sc.wikipedia.org/wiki/Alzachena"
+    },
+    {
+      "name": "Arzachena",
+      "url": "https://sc.wikipedia.org/wiki/Arzachena"
+    }
+  ],
+  "templates": [
+    {
+      "name": "Template:Coord",
+      "url": "https://sc.wikipedia.org/wiki/Template:Coord"
+    },
+    {
+      "name": "Template:Tmp",
+      "url": "https://sc.wikipedia.org/wiki/Template:Tmp"
+    },
+    {
+      "name": "Template:S/geografia",
+      "url": "https://sc.wikipedia.org/wiki/Template:S/geografia"
+    },
+    {
+      "name": "Template:Variant",
+      "url": "https://sc.wikipedia.org/wiki/Template:Variant"
+    },
+    {
+      "name": "Template:Provìntzia de su Nord-Est Sardigna",
+      "url": "https://sc.wikipedia.org/wiki/Template:Provìntzia_de_su_Nord-Est_Sardigna"
+    }
+  ],
+  "url": "https://sc.wikipedia.org/wiki/Altzagh%C3%A8na",
+  "version": {
+    "editor": {
+      "identifier": 7227,
+      "name": "L2212"
+    },
+    "identifier": 181362,
+    "number_of_characters": 499,
+    "size": {
+      "unit_text": "B",
+      "value": 503
+    },
+    "tags": [
+      "wikieditor"
+    ]
+  }
+}
