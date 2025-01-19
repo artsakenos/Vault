@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import tk.artsakenos.vault.service.ParserFileService;
 import tk.artsakenos.vault.service.ParserWikiService;
 
 import java.io.IOException;
@@ -20,6 +21,9 @@ public class ImporterController {
 
     @Autowired
     private ParserWikiService parserWikiService;
+
+    @Autowired
+    private ParserFileService parserFileService;
 
     public static final String UPLOAD_PATH = "db/uploads/";
 
@@ -64,6 +68,7 @@ public class ImporterController {
                         Path filePath = uploadPath.resolve(file.getOriginalFilename());
                         Files.copy(file.getInputStream(), filePath);
                         message.append("File ").append(file.getOriginalFilename()).append(" uploaded successfully to ").append(UPLOAD_PATH);
+                        parserFileService.parseFile(filePath);
                     } catch (IOException e) {
                         message.append("Failed to upload file: ").append(e.getMessage());
                     }

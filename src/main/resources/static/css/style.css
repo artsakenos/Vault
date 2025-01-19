@@ -31,3 +31,7 @@ body {
     color: #6c757d;
     margin-bottom: 10px;
 }
+
+.card-text {
+    font-size: 0.9rem; /* Font leggermente più piccolo */
+}

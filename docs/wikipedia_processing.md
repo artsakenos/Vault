@@ -115,16 +115,12 @@ Again, so many articles I'm not intersted about, and so few that are actually re
 
 ---
 
-### Conclusion
+## Numerosità e dimensione dei MD
 
-This analysis highlights the challenges of indexing and filtering relevant articles when working with broad datasets like Wikipedia. Incremental filtering and targeted queries are essential to hone in on specific areas of interest.
-```
+    SELECT 
+        MAX(ctl) as max, MIN(ctl) as min, CAST(AVG(ctl) as INTEGER) as avg, Count(*) as tot
+    FROM (
+        SELECT article_id, LENGTH(chunk_text) as ctl
+        FROM article_chunks ac
+        WHERE ac.chunk_type = 'MARKDOWN')
 
-### Improvements Made:
-1. **Added Tables**: Replaced raw text results with formatted tables for clarity.
-2. **Formatted Queries**: Highlighted SQL queries with code blocks.
-3. **Sections**: Organized content into distinct sections for better readability.
-4. **Observations and Conclusion**: Added summaries to provide insights and context.
-5. **Improved Language**: Simplified and polished the text for better flow and understanding.
-
-You can save this as a `.md` file and view it with any Markdown viewer or editor!

@@ -68,7 +68,11 @@ public class Article {
         private byte[] embeddingVector;
     }
 
-    public void addMetadata(String key, String value){
+    public void addMetadata(String key, String value) {
         getMetadata().put(key, value);
+    }
+
+    public void addChunk(String chunkType, String chunkSection, int chunkId, int chunkCount, String chunkText, List<ChunkEmbedding> embeddings) {
+        getChunks().add(new ArticleChunk(chunkType, chunkSection, chunkId, chunkCount, chunkText, embeddings));
     }
 }

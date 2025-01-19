@@ -47,29 +47,42 @@ It has Full-Text Search (FTS) and vector capabilities.
 
 ## Vault Database
 
-* The vault db structure is described [here](./docs/db_structure.sql) together with FTS tables and triggers.
-* You can see some [sample FTS queries](./docs/valut_fts_queries.sql).
+* The vault db structure is described [here](./src/main/resources/database/vault_init.sql) together with FTS tables and triggers.
+* You can see some [sample FTS queries](./docs/vault_fts_queries.sql).
 
 The structure is scalable, designed to allow the addition of related information without affecting the main tables.
 It is incremental, meaning that related information can be added as needed, 
 such as processing new metadata, adding new embeddings, and so on.
 
+# Installation & Usage
 
-## Setup
-* Note: the following steps need to be automated.
-* Download a dump, for example:
-  * cd db/dumps/dump_simplewiki
-  * wget https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/simplewiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz
-  * tar -xzvf ...
-* Parse the directory: http://localhost:8181/vault/parse_dir?dirPath=./db/dump_simplewiki
-* Or parse a file: http://localhost:8181/vault/parse_file?filePath=./db/dump_simplewiki/simplewiki_namespace_0_5.ndjson
+1. Clone the repository
+2. Setup your src/main/resources/env.properties
+3. Compile, and run.
 
-## Usage
-* Perform a search, e.g., http://localhost:8181/vault/search?query=mazzini
+**Wikipedia Dumps Import** - Download a dump, for example:
+* cd db/dumps/dump_simplewiki
+* wget https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/simplewiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz
+* tar -xzvf ...
+Then visit the /import page.
+
+**Search** - Perform a search, e.g., http://localhost:8181/vault/search?query=mazzini
 
 [![Watch the Demo](https://img.youtube.com/vi/m3wewJOdCUs/0.jpg)](https://www.youtube.com/watch?v=m3wewJOdCUs&ab_channel=AndreaAddis)
+
+
+# TODO
+
+- [ ] Rinominare article_chunk.source -> .article_source
+- [ ] Risolvere il problema dei ' nelle query di ricerca
+- [x] Importare Embedding libs, già sviluppate per UltraServices
+- [ ] Security
+- [ ] Sezionare markdown files
+- [ ] Implementare vector search
+
 
 # Credits
 
 * [WikiLite](https://github.com/eja/wikilite) by [Eja](https://eja.it)
 * Safe Icon by [Icon 8](https://icons8.com/icon/80779/safe)
+* LLM Search Powered by [Groq](https://groq.com)

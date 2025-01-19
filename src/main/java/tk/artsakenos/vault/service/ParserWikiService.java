@@ -88,17 +88,28 @@ public class ParserWikiService {
         String articleText = Jsoup.parse(articleHtml).body().text();
 
         // Non è necessario, un trigger indicizza l'article description
-        // article.getChunks().add(new Article.ArticleChunk(
-        //        Article.CHUNK_ABSTRACT, null, 1, 1, article.getDescription(), null));
-        article.getChunks().add(new Article.ArticleChunk(
-                Article.CHUNK_HTML, null, 1, 1, articleHtml, null));
-        article.getChunks().add(new Article.ArticleChunk(
-                Article.CHUNK_MARKDOWN, null, 1, 1, articleWiki, null));
-        article.getChunks().add(new Article.ArticleChunk(
-                Article.CHUNK_TEXT, null, 1, 1, articleText, null));
+        // article.addChunk(Article.CHUNK_ABSTRACT, null, 1, 1, article.getDescription(), null);
+        article.addChunk(Article.CHUNK_HTML, null, 1, 1, articleHtml, null);
+        article.addChunk(Article.CHUNK_MARKDOWN, null, 1, 1, articleWiki, null);
+        article.addChunk(Article.CHUNK_TEXT, null, 1, 1, articleText, null);
+
+        chunkMarkdown(article, articleWiki);
 
         sqlite.insert(article);
         return true;
+    }
+
+    private void chunkMarkdown(Article article, String articleWiki) {
+        String[] wikiSections = articleWiki.replaceAll("\r", "").split("\n==");
+        int counter = 0;
+        int total = wikiSections.length;
+        for (String wikiSection : wikiSections) {
+            int sStart = wikiSection.indexOf(" =") + 2;
+            int sEnd = wikiSection.indexOf(" =", sStart);
+            String sectionName = wikiSection.substring(sStart, sEnd);
+            article.addChunk(Article.CHUNK_MARKDOWN, sectionName, ++counter, total, wikiSection, null);
+        }
+
     }
 
 
