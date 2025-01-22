@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import tk.artsakenos.vault.service.SqliteService;
 
+import java.sql.SQLException;
+
 @SuppressWarnings("unused")
 @Controller
 public class MainController {
@@ -19,9 +21,9 @@ public class MainController {
         return "about";
     }
 
-    @GetMapping("article_body/{id}")
+    @GetMapping("/article_html/{source}/{id}")
     @ResponseBody
-    public String showArticleBody(@PathVariable int id) {
-        return sqliteService.getArticleHtml(id);
+    public String showArticleBody(@PathVariable String source, @PathVariable String id) throws SQLException {
+        return sqliteService.getArticleHtml(source, id);
     }
 }

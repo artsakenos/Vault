@@ -33,6 +33,7 @@
             <tr>
                 <th>Name</th>
                 <th>Rank</th>
+                <th>Source</th>
                 <th>ID</th>
                 <th>Abstract</th>
             </tr>
@@ -41,8 +42,12 @@
             <tr th:each="result : ${results}">
                 <td th:text="${result['name']}"></td>
                 <td th:text="${result['rank']}"></td>
+                <td th:text="${result['source']}"></td>
                 <td>
-                    <a href="#" class="article-link" th:data-id="${result['id']}" th:text="${result['id']}"></a>
+                    <a href="#" class="article-link"
+                       th:data-id="${result['id']}"
+                       th:data-source="${result['source']}"
+                       th:text="${result['id']}"></a>
                 </td>
                 <td th:text="${result['chunk_text']}"></td>
             </tr>
@@ -80,15 +85,23 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const articleLinks = document.querySelectorAll('.article-link');
-        const modal = new bootstrap.Modal(document.getElementById('articleModal'));
+        let modal = new bootstrap.Modal(document.getElementById('articleModal'));
+
+        document.getElementById('articleModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('articleContent').innerHTML = '';
+            modal.dispose(); // Altrimenti inizia a fetchare da Wikipedia.
+            modal = new bootstrap.Modal(document.getElementById('articleModal'));
+        });
 
         articleLinks.forEach(link => {
             link.addEventListener('click', function(event) {
                 event.preventDefault();
+                const articleSource = this.getAttribute('data-source');
                 const articleId = this.getAttribute('data-id');
 
-                // Fetch the article
-                fetch(`/article_body/${articleId}`)
+                fetch(`/article_html/${articleSource}/${articleId}`, {
+                    headers: {'Accept': 'text/html'}
+                })
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('articleContent').innerHTML = html;

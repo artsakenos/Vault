@@ -57,9 +57,10 @@ public class ParserWikiService {
 
     private boolean parseLine(String line) {
         JsonNode jsonNode = Jsonable.toJsonNode(line);
-        Article article = new Article();
-        article.setSource(Article.SOURCE_WIKI);
         String identifier = WikiJsonDumpParser.getProperty(jsonNode, "/identifier");
+        String source = WikiJsonDumpParser.getProperty(jsonNode, "/is_part_of/identifier");
+        Article article = new Article();
+        article.setSource(source);
 
         article.setId(identifier);
         article.addMetadata(Article.METADATA_ENTITY_ID, WikiJsonDumpParser.getProperty(jsonNode, "/main_entity/identifier"));
@@ -80,18 +81,18 @@ public class ParserWikiService {
         article.setTags(propertyTags);
 
         article.addMetadata(Article.METADATA_LANGUAGE, WikiJsonDumpParser.getProperty(jsonNode, "/in_language/identifier"));
-        article.addMetadata(Article.METADATA_WIKI_SOURCE, WikiJsonDumpParser.getProperty(jsonNode, "/is_part_of/identifier"));
         article.addMetadata(Article.METADATA_BANNER, WikiJsonDumpParser.getProperty(jsonNode, "/image/content_url"));
+        // article.addMetadata(Article.METADATA_WIKI_SOURCE, WikiJsonDumpParser.getProperty(jsonNode, "/is_part_of/identifier"));
 
         String articleHtml = WikiJsonDumpParser.getProperty(jsonNode, "/article_body/html");
         String articleWiki = WikiJsonDumpParser.getProperty(jsonNode, "/article_body/wikitext");
         String articleText = Jsoup.parse(articleHtml).body().text();
 
         // Non è necessario, un trigger indicizza l'article description
-        // article.addChunk(Article.CHUNK_ABSTRACT, null, 1, 1, article.getDescription(), null);
-        article.addChunk(Article.CHUNK_HTML, null, 1, 1, articleHtml, null);
-        article.addChunk(Article.CHUNK_MARKDOWN, null, 1, 1, articleWiki, null);
-        article.addChunk(Article.CHUNK_TEXT, null, 1, 1, articleText, null);
+        // article.addChunk(Article.CHUNK_ABSTRACT, null, 0, 0, article.getDescription(), null);
+        article.addChunk(Article.CHUNK_HTML, null, 0, 0, articleHtml, null);
+        article.addChunk(Article.CHUNK_MARKDOWN, null, 0, 0, articleWiki, null);
+        article.addChunk(Article.CHUNK_TEXT, null, 0, 0, articleText, null);
 
         chunkMarkdown(article, articleWiki);
 
@@ -101,12 +102,15 @@ public class ParserWikiService {
 
     private void chunkMarkdown(Article article, String articleWiki) {
         String[] wikiSections = articleWiki.replaceAll("\r", "").split("\n==");
-        int counter = 0;
         int total = wikiSections.length;
+        if (total <= 1) return;
+        int counter = 0;
         for (String wikiSection : wikiSections) {
-            int sStart = wikiSection.indexOf(" =") + 2;
+            // System.out.println(wikiSection.replaceAll("\n", ""));
+
+            int sStart = wikiSection.indexOf(" ") + 1;
             int sEnd = wikiSection.indexOf(" =", sStart);
-            String sectionName = wikiSection.substring(sStart, sEnd);
+            String sectionName = (sEnd >= 0) ? wikiSection.substring(sStart, sEnd).replaceAll("\n", "").trim() : null;
             article.addChunk(Article.CHUNK_MARKDOWN, sectionName, ++counter, total, wikiSection, null);
         }
 

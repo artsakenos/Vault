@@ -117,10 +117,11 @@ Again, so many articles I'm not intersted about, and so few that are actually re
 
 ## Numerosità e dimensione dei MD
 
-    SELECT 
-        MAX(ctl) as max, MIN(ctl) as min, CAST(AVG(ctl) as INTEGER) as avg, Count(*) as tot
-    FROM (
-        SELECT article_id, LENGTH(chunk_text) as ctl
-        FROM article_chunks ac
-        WHERE ac.chunk_type = 'MARKDOWN')
+Senza Chunking:
+45943	84	2509	1248
+
+Con Chunking:
+45943	84	2509	1248
+
+Differenza tra testo, html e markdown
 

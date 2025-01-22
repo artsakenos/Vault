@@ -77,7 +77,7 @@ public class SqliteService {
         if (article.getCategories() != null && !article.getCategories().isEmpty()) {
             executeTransaction(connection -> {
                 try (var stmt = connection.prepareStatement("""
-                        INSERT OR REPLACE INTO article_categories (source, article_id, category)
+                        INSERT OR REPLACE INTO article_categories (article_source, article_id, category)
                         VALUES (?, ?, ?)
                         """)) {
                     for (String category : article.getCategories()) {
@@ -95,7 +95,7 @@ public class SqliteService {
         if (article.getTags() != null && !article.getTags().isEmpty()) {
             executeTransaction(connection -> {
                 try (var stmt = connection.prepareStatement("""
-                        INSERT OR REPLACE INTO article_tags (source, article_id, tag)
+                        INSERT OR REPLACE INTO article_tags (article_source, article_id, tag)
                         VALUES (?, ?, ?)
                         """)) {
                     for (String tag : article.getTags()) {
@@ -113,7 +113,7 @@ public class SqliteService {
         if (article.getMetadata() != null && !article.getMetadata().isEmpty()) {
             executeTransaction(connection -> {
                 try (var stmt = connection.prepareStatement("""
-                        INSERT OR REPLACE INTO article_meta (source, article_id, meta_type, meta_value)
+                        INSERT OR REPLACE INTO article_meta (article_source, article_id, meta_type, meta_value)
                         VALUES (?, ?, ?, ?)
                         """)) {
                     for (Map.Entry<String, String> meta : article.getMetadata().entrySet()) {
@@ -134,7 +134,7 @@ public class SqliteService {
             executeTransaction(connection -> {
                 try (var stmt = connection.prepareStatement("""
                         INSERT OR REPLACE INTO article_chunks
-                        (source, article_id, chunk_type, chunk_section, chunk_id, chunk_count, chunk_text)
+                        (article_source, article_id, chunk_type, chunk_section, chunk_id, chunk_count, chunk_text)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                         """)) {
                     for (Article.ArticleChunk chunk : article.getChunks()) {
@@ -155,7 +155,7 @@ public class SqliteService {
             executeTransaction(connection -> {
                 try (var stmt = connection.prepareStatement("""
                         INSERT OR REPLACE INTO article_embeddings
-                        (source, article_id, chunk_type, chunk_id, embedding_model, embedding_vector)
+                        (article_source, article_id, chunk_type, chunk_id, embedding_model, embedding_vector)
                         VALUES (?, ?, ?, ?, ?, ?)
                         """)) {
                     for (Article.ArticleChunk chunk : article.getChunks()) {
@@ -191,8 +191,18 @@ public class SqliteService {
 
     }
 
-    public String getArticleHtml(int id) {
-        return "Ciao, Cipollino!";
+    public String getArticleHtml(String source, String id) throws SQLException {
+        String selectHtmlFromId = """
+                SELECT *
+                FROM articles a, article_chunks ac
+                WHERE   a."source" = ac.article_source
+                    AND a.id = ac.article_id
+                    AND source = ?
+                    AND a.id = ?
+                    AND chunk_type = 'HTML'
+                    """;
+        List<Map<String, Object>> article = db.query(selectHtmlFromId, source, id);
+        return article.get(0).get("chunk_text").toString();
     }
 
     @FunctionalInterface
