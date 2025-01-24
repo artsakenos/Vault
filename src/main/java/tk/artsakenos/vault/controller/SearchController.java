@@ -33,7 +33,9 @@ public class SearchController {
 
 
     @GetMapping("/search")
-    public String performSearch(@RequestParam(value = "query", required = false) String query,
+    public String performSearch(
+            @RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "source", required = false) String source,
                                 Model model, HttpServletRequest request) {
         logService.logUserData(request, query);
         if (query == null || query.trim().isEmpty()) {
@@ -41,12 +43,21 @@ public class SearchController {
         }
 
         String ftsKeywords = aiService.retrieveKeywords(query);
-        ftsKeywords = ftsKeywords.replaceAll("'", "\"");
-        ftsKeywords += " AND article_source:scwiki";
+        if (ftsKeywords == null || ftsKeywords.trim().isEmpty()) {
+            ftsKeywords = query;
+        } else {
+            ftsKeywords = ftsKeywords.replaceAll("'", "\"");
+            // ftsKeywords += " AND article_source:scwiki";
+        }
+        if (source != null && !source.trim().isEmpty()) {
+            ftsKeywords += " AND article_source:" + source;
+        }
+
         log.info("User Query: {}; translated to match clause: {};", query, ftsKeywords);
         chronometer.start();
         List<Map<String, Object>> results = sqliteService.queryVault(ftsKeywords);
         long duration = chronometer.getTimePassedMillisecs();
+        model.addAttribute("sources", sqliteService.getAvailableSources());
         model.addAttribute("query", query);
         model.addAttribute("results", results);
         model.addAttribute("duration", duration);

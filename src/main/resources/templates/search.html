@@ -12,6 +12,13 @@
     <!-- Search Form -->
     <form action="/search" method="get" class="mb-5">
         <div class="input-group">
+            <select name="source" class="form-select" style="max-width: 200px;">
+                <option value="">All Sources</option>
+                <option th:each="source : ${sources}"
+                        th:value="${source}"
+                        th:text="${source}"
+                        th:selected="${source == param.source}"></option>
+            </select>
             <input type="text"
                    name="query"
                    class="form-control"
@@ -33,7 +40,6 @@
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
-                <th>ID</th>
                 <th>Source</th>
                 <th>Name</th>
                 <th>Description</th>
@@ -43,14 +49,19 @@
             <tbody>
             <tr th:each="result : ${results}">
                 <td>
+                    <span th:text="${result['source']}"></span><br>
                     <a href="#" class="article-link"
                        th:data-id="${result['id']}"
                        th:data-source="${result['source']}"
                        th:text="${result['id']}"></a>
                 </td>
-                <td th:text="${result['source']}"></td>
-                <td th:text="${result['name']}"></td>
-                <td th:text="${result['chunk_text']}"></td>
+                <td>
+                    <a href="#" class="article-name"
+                       th:data-id="${result['name']}"
+                       th:data-description="${result['description']}"
+                       th:text="${result['name']}"></a>
+                </td>
+                <td th:text="${#strings.abbreviate(result['chunk_text'], 500)}"></td>
                 <td th:text="${#numbers.formatDecimal(result['rank'], 1, 2)}"></td>
             </tr>
             </tbody>
@@ -76,6 +87,24 @@
     </div>
 </div>
 
+<!-- Add this modal just after the existing articleModal -->
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="descriptionContent">
+                <!-- Description content will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Include Footer -->
 <div th:replace="~{fragments/footer :: footer}"></div>
 
@@ -87,8 +116,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const articleLinks = document.querySelectorAll('.article-link');
-        let modal = new bootstrap.Modal(document.getElementById('articleModal'));
 
+        let modal = new bootstrap.Modal(document.getElementById('articleModal'));
         document.getElementById('articleModal').addEventListener('hidden.bs.modal', function () {
             document.getElementById('articleContent').innerHTML = '';
             modal.dispose(); // Altrimenti inizia a fetchare da Wikipedia.
@@ -111,6 +140,23 @@
                     })
                     .catch(error => console.error('Error fetching article:', error));
             });
+        });
+    });
+
+
+    const descriptionModal = new bootstrap.Modal(document.getElementById('descriptionModal'));
+    // Add event listeners for description links
+    const descriptionLinks = document.querySelectorAll('.article-name');
+    descriptionLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const description = this.getAttribute('data-description');
+
+            // Populate the description modal
+            document.getElementById('descriptionModalLabel').textContent = this.textContent;
+            document.getElementById('descriptionContent').innerHTML = description;
+            // Show the description modal
+            descriptionModal.show();
         });
     });
 </script>

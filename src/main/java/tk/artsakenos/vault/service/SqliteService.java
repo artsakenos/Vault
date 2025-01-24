@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 @SuppressWarnings("unused")
 @Slf4j
@@ -203,6 +204,20 @@ public class SqliteService {
                     """;
         List<Map<String, Object>> article = db.query(selectHtmlFromId, source, id);
         return article.get(0).get("chunk_text").toString();
+    }
+
+    public TreeSet<String> getAvailableSources() {
+        final String selectHtmlFromId = "SELECT distinct(source) FROM articles";
+        final TreeSet<String> sourceSet = new TreeSet<>();
+        try {
+            List<Map<String, Object>> sources = db.query(selectHtmlFromId);
+            for (Map<String, Object> source : sources) {
+                sourceSet.add(source.get("source").toString());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return sourceSet;
     }
 
     @FunctionalInterface

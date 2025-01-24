@@ -60,7 +60,8 @@ public class AIService {
         SuperHttpClient.SuperResponse superResponse = client.postJson("", jsonBody, postParameters, null);
 
         if (!superResponse.isSuccessful()) {
-            return "ERROR (" + superResponse.getCode() + "): " + superResponse.getBody();
+            log.error("ERROR (" + superResponse.getCode() + "): " + superResponse.getBody());
+            return null;
         }
 
         String jsonResponse = superResponse.getBody();

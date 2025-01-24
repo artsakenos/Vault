@@ -1,10 +1,13 @@
 # Vault Project
 
+In a world of uncertainty, we need a proactive approach to knowledge preservation —
+a digital sanctuary ensuring information remains accessible, regardless of external constraints.
+
 One day they might take away our internet because they'll deem it offensive to minorities. 
 Then they might take away our electricity - or maybe they won't take it away, 
 but they'll jack up the prices using excuses like uncontrollable flu, mask taxes and wheeled desk fees.
 
-Then they might take away our homes - who knows, maybe they'll decide that even to live in our own houses
+Then they might take away our homes, or they'll decide that to live in our own houses
 we'll have to pay rent, disguised as property tax, waste tax, service tax, gasoline excise duties,
 protection money to the neighborhood boss, and kickbacks to the politician in charge.
 
@@ -29,7 +32,7 @@ You chose your own sources and even personal documents.
 However, it's designed to natively import information from several semantic databases and crowd-sourced repositories:
 
 * Wikipedia - The project stores projection of information from the Wikipedia dumps.
-  * Check some [Wikipedia](./docs/wikipedia.md) under the hood Features
+  * Check some [Wikipedia](./docs/wikipedia.md) under the hood Features ([In Italian](./docs/wikipedia_it.md))
   * A WIP Study on [Wikipedia Processing](./docs/wikipedia_processing.md)
 * OSM - Open Street Maps
   * A WIP Study on [OSM](./docs/openstreetmap.md)
@@ -63,19 +66,20 @@ such as processing new metadata, adding new embeddings, and so on.
 
 **Wikipedia Dumps Import** - See [Wikipedia Dumps](./docs/wikipedia.md#download-procedure) for more details.
 
-**Search** - Perform a search, e.g., http://localhost:8181/vault/search?query=mazzini
+**Search** - Perform a search, e.g., http://localhost:8181/search?query=mazzini
 
 [![Watch the Demo](https://img.youtube.com/vi/m3wewJOdCUs/0.jpg)](https://www.youtube.com/watch?v=m3wewJOdCUs&ab_channel=AndreaAddis)
 
 
 # TODO
 
-- [ ] Rinominare article_chunk.source -> .article_source
 - [ ] Risolvere il problema dei ' nelle query di ricerca
-- [x] Importare Embedding libs, già sviluppate per UltraServices
 - [ ] Security
-- [ ] Sezionare markdown files
 - [ ] Implementare vector search
+- [ ] Pool of query per pulire il DB da 
+  - disambigua WP:DISAMBIG|disambiguation page, ..., {{disambig}} 
+  - original markdown? Text?
+  - chunk troppo ridotti
 
 
 # Credits
