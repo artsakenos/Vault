@@ -26,30 +26,32 @@
         <h2 class="mb-4">Results</h2>
         <p class="mb-4">
             <strong>Query:</strong> <span th:text="${query}"></span><br>
-            <strong>Time taken:</strong> <span th:text="${#numbers.formatDecimal(duration / 1000.0, 1, 2)}"></span> seconds
+            <!-- FTS Keywords: [[${ftsKeywords}]] -->
+            <strong>Time taken:</strong> <span th:text="${#numbers.formatDecimal(duration / 1000.0, 1, 2)}"></span>
+            seconds
         </p>
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
-                <th>Name</th>
-                <th>Rank</th>
-                <th>Source</th>
                 <th>ID</th>
-                <th>Abstract</th>
+                <th>Source</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Rank</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="result : ${results}">
-                <td th:text="${result['name']}"></td>
-                <td th:text="${result['rank']}"></td>
-                <td th:text="${result['source']}"></td>
                 <td>
                     <a href="#" class="article-link"
                        th:data-id="${result['id']}"
                        th:data-source="${result['source']}"
                        th:text="${result['id']}"></a>
                 </td>
+                <td th:text="${result['source']}"></td>
+                <td th:text="${result['name']}"></td>
                 <td th:text="${result['chunk_text']}"></td>
+                <td th:text="${#numbers.formatDecimal(result['rank'], 1, 2)}"></td>
             </tr>
             </tbody>
         </table>

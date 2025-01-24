@@ -5,16 +5,17 @@ Then they might take away our electricity - or maybe they won't take it away,
 but they'll jack up the prices using excuses like uncontrollable flu, mask taxes and wheeled desk fees.
 
 Then they might take away our homes - who knows, maybe they'll decide that even to live in our own houses
-we'll have to pay rent, disguised as property tax, waste tax, service tax, 
+we'll have to pay rent, disguised as property tax, waste tax, service tax, gasoline excise duties,
 protection money to the neighborhood boss, and kickbacks to the politician in charge.
 
-Then they'll take away our books, claiming emotions are harmful. 
+Then they'll take away our books, claiming emotions are harmful 
+and that they care about our well-being, and that they want to protect us under their wild armpit.
 They'll block Wikipedia because someone maybe reported events that never happened 
-in a large square in some asian's country capital.
+in a large square in some eastern country capital.
 
 At that point, you'll wish you had a manual teaching you how to start a fire and grow potatoes. 
 And why not, to read novels and learn about past cultures, 
-so you can share and pass them on to new generations living in a world of plastic and rotten mattresses.
+so you can share and pass them on to new generations living in a world of plastic and rotten beds.
 
 This project is an attempt to create a digital survival manual - a Knowledge Vault that can be consulted offline, 
 in a world where basic services are no longer guaranteed.
@@ -27,7 +28,7 @@ the data architecture reflects a compromise between readability and performance.
 You chose your own sources and even personal documents.
 However, it's designed to natively import information from several semantic databases and crowd-sourced repositories:
 
-* Wikipedia - The project stores projection of information from Wikipedia the dumps.
+* Wikipedia - The project stores projection of information from the Wikipedia dumps.
   * Check some [Wikipedia](./docs/wikipedia.md) under the hood Features
   * A WIP Study on [Wikipedia Processing](./docs/wikipedia_processing.md)
 * OSM - Open Street Maps
@@ -60,11 +61,7 @@ such as processing new metadata, adding new embeddings, and so on.
 2. Setup your src/main/resources/env.properties
 3. Compile, and run.
 
-**Wikipedia Dumps Import** - Download a dump, for example:
-* cd db/dumps/dump_simplewiki
-* wget https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/simplewiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz
-* tar -xzvf ...
-Then visit the /import page.
+**Wikipedia Dumps Import** - See [Wikipedia Dumps](./docs/wikipedia.md#download-procedure) for more details.
 
 **Search** - Perform a search, e.g., http://localhost:8181/vault/search?query=mazzini
 

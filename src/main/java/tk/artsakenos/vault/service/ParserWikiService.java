@@ -12,6 +12,7 @@ import tk.artsakenos.vault.model.Article;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 
@@ -27,9 +28,14 @@ public class ParserWikiService {
     private String parserStatus = "#idle";
 
     public void parseDir(String dirPath) throws IOException {
-        String[] files = FileManager.getFiles(dirPath, false, new String[]{".ndjson"});
+        String normalizedDirPath = Paths.get(dirPath).normalize().toString();
+        String[] files = FileManager.getFiles(normalizedDirPath, false, new String[]{".ndjson"});
         for (String file : files) {
-            parseFile(dirPath + "/" + file);
+            String filePath = Paths.get(normalizedDirPath, file).toString();
+            parseFile(filePath);
+        }
+        if (files.length == 0) {
+            throw new IOException("No files found in the directory: " + normalizedDirPath);
         }
     }
 

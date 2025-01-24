@@ -9,7 +9,7 @@ WHERE chunk_text MATCH 'machine learning';
 SELECT article_source, article_id, article_name, chunk_type, chunk_text
 FROM articles_content_fts
 WHERE chunk_text MATCH 'neural network'
-AND source = 'arxiv'
+AND article_source = 'arxiv'
 AND chunk_type = 'ABSTRACT';
 
 -- 3. Search with boolean operators: Find chunks containing "deep learning" and "computer vision", but not "tensorflow".
@@ -31,7 +31,7 @@ WHERE chunk_text MATCH 'reinforcement learning OR supervised learning';
 SELECT article_source, article_id, article_name, chunk_type, chunk_text
 FROM articles_content_fts
 WHERE chunk_text MATCH 'generative adversarial networks'
-AND source = 'medium'
+AND article_source = 'medium'
 AND article_id = 123
 AND chunk_type = 'TEXT';
 
@@ -55,3 +55,17 @@ WHERE chunk_text MATCH 'artificial intelligence NOT ethics';
 SELECT article_source, article_id, article_name, chunk_type, chunk_text
 FROM articles_content_fts
 WHERE chunk_text MATCH 'learn';
+
+--- Note that you can further filter selecting for example the source by the Match Query:
+
+-- 11. Basic Source Match - Searches for "machine learning" in Wikipedia sources.
+SELECT * FROM articles_content_fts
+WHERE articles_content_fts MATCH 'article_source:wikipedia AND chunk_text:machine learning';
+
+-- 12. Exact Source Phrase - Matches exact source phrase "New York Times".
+SELECT * FROM articles_content_fts
+WHERE articles_content_fts MATCH '"article_source:New York Times"';
+
+-- 13. Multiple Source Search - Searches for "algorithm" in ArXiv or Nature sources.
+SELECT * FROM articles_content_fts
+WHERE articles_content_fts MATCH '(article_source:arxiv OR article_source:nature) AND algorithm';

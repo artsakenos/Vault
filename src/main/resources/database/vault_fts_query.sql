@@ -1,5 +1,5 @@
 SELECT
-	a.source, a.id, a.name,
+	a.source, a.id, a.name, a.description,
 	afts.chunk_type, afts.chunk_text,
 	rank -- synonym of bm25(articles_content_fts) as score
 FROM

@@ -42,6 +42,7 @@ public class SearchController {
 
         String ftsKeywords = aiService.retrieveKeywords(query);
         ftsKeywords = ftsKeywords.replaceAll("'", "\"");
+        ftsKeywords += " AND article_source:scwiki";
         log.info("User Query: {}; translated to match clause: {};", query, ftsKeywords);
         chronometer.start();
         List<Map<String, Object>> results = sqliteService.queryVault(ftsKeywords);
@@ -49,7 +50,7 @@ public class SearchController {
         model.addAttribute("query", query);
         model.addAttribute("results", results);
         model.addAttribute("duration", duration);
-
+        model.addAttribute("ftsKeywords", ftsKeywords);
         return "search";
     }
 

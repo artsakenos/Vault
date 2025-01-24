@@ -1,75 +1,78 @@
-
-Wikipedia è un progetto di enciclopedia online, multilingue, libero e gratuito, scritto collaborativamente da volontari.
+Wikipedia is an online encyclopedia project that is multilingual, free, and collaboratively written by volunteers.
 
 # API
 
 [Wikipedia API SandBox](https://en.wikipedia.org/wiki/Special:ApiSandbox)
 
-
 # Dumps
 
-Wikimedia mette a disposizione dei [dump](https://dumps.wikimedia.org/backup-index.html). 
-Contengono i backup dei vari progetti, wikipedia, wikiquote, wikvoyage, ...
-Basta scegliere i dump relativi alla lingua selezionata. Ad esempio, per la lingua cinese (zh):
+Wikimedia provides [dumps](https://dumps.wikimedia.org/backup-index.html).
+They contain backups of various projects: wikipedia, wikiquote, wikivoyage, ...
+Simply choose the dumps related to your selected language. For example, for Chinese language (zh):
 * zhwiki - Wikipedia
 * zhwiktionary - Dictionary
 * zhwikisource - WikiSource
 * zhwikibooks - Books
 * ...
 
-Apriamo l'ultimo [zhwiki](https://dumps.wikimedia.org/zhwiki/20250101/), controllando che il dump sia *complete*.
+Let's open the latest [zhwiki](https://dumps.wikimedia.org/zhwiki/20250101/), ensuring that the dump is *complete*.
 
-## Dump Strutturati
+## Structured Dumps
 
-Per il vault Vengono usati dei dump 
-    in un [altro formato](https://dumps.wikimedia.org/other/) 
-    in particolare, un [formato json già ben strutturato](https://dumps.wikimedia.org/other/enterprise_html/).
-Da qui cercare la [directory](https://dumps.wikimedia.org/other/enterprise_html/runs/20250101/)
-Tenendo conto che, ad esempio, in *zhwiki-NS0-20250101-ENTERPRISE-HTML.json.tar.gz*:
-* zh: Codice ISO 639-1 per la lingua cinese.
-* wiki indica che è il dump di un progetto Wikipedia.
-* NS0: Identifica lo spazio dei nomi (namespace) all'interno del progetto.
-  * **NS0** (quello che serve) si riferisce agli articoli principali o pagine di contenuto standard di Wikipedia.
-  * NS1: Discussioni sugli articoli.
-  * NS4: Wikipedia (pagine relative al progetto stesso).
-  * NS8: MediaWiki (pagine di sistema per l'interfaccia utente).
-  * NS10: Template riutilizzabili.
-  * NS14: Categorie per organizzare pagine.
-  * NS6: File multimediali con dettagli e licenze.  * 
-* 20241201: Data del dump.
-* ENTERPRISE-HTML: Specifica che il file contiene dati HTML pre-elaborati dal servizio Enterprise.
-* .json formato, e .tar.gz compressione.
+For the vault, dumps in [another format](https://dumps.wikimedia.org/other/) are used,
+specifically, a [well-structured JSON format](https://dumps.wikimedia.org/other/enterprise_html/).
+From here, look for the [directory](https://dumps.wikimedia.org/other/enterprise_html/runs/20250101/) inside *runs/*.
+Note that, for example, in *zhwiki-NS0-20250101-ENTERPRISE-HTML.json.tar.gz*:
+* zh: ISO 639-1 code for Chinese language
+* wiki indicates it's a Wikipedia project dump
+* NS0: Identifies the namespace within the project
+    * **NS0** (the one we need) refers to main articles or standard Wikipedia content pages
+    * NS1: Article discussions
+    * NS4: Wikipedia (pages related to the project itself)
+    * NS8: MediaWiki (system pages for user interface)
+    * NS10: Reusable templates
+    * NS14: Categories for organizing pages
+    * NS6: Multimedia files with details and licenses
+* 20241201: Dump date
+* ENTERPRISE-HTML: Specifies that the file contains pre-processed HTML data from the Enterprise service
+* .json format, and .tar.gz compression
 
+## Download Procedure
+1. Visit one of the runs pages, selected from: https://dumps.wikimedia.org/other/enterprise_html/runs/
+2. Select simplewiki-NS0-... (assuming you've chosen simplewiki)
+3. Create and enter the folder db/dumps/simplewiki
+4. wget https://dumps.wikimedia.org/other/enterprise_html/runs/20250101/simplewiki-NS0-20250101-ENTERPRISE-HTML.json.tar.gz
+5. tar -xzvf ...
+6. Visit the vault /import page
 
-Alcuni dump di esempio:
+Some example dumps:
 * [Sardinia](https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/scwiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz) (30 MB)
 * [Italy](https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/itwiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz) (24 GB)
-* [SimpleWIki](https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/simplewiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz) (2 GB)
+* [SimpleWiki](https://dumps.wikimedia.org/other/enterprise_html/runs/20241201/simplewiki-NS0-20241201-ENTERPRISE-HTML.json.tar.gz) (2 GB)
 
 # Entities
 
-Esempi di Entities
+Entity Examples
 * [Q3282218 - Malloreddus](https://www.wikidata.org/wiki/Q3282218)
 * [Q3282218 - Malloreddus, Json](https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q3282218&format=json)
 * [Q186538 - Arzachena, Json](https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q186538&format=json)
 
 # Statements / Claims
 
-All'interno delle entities ci sono tutte le proprties strutturate (statements).
-Ecco la [Lista di Properties](https://www.wikidata.org/wiki/Wikidata:List_of_properties)
+Within entities, there are all structured properties (statements).
+Here's the [List of Properties](https://www.wikidata.org/wiki/Wikidata:List_of_properties)
 
-Esempi con [Garibaldi - Q359](https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q539&format=json)
-* P569 È la data di nascita datatype": "time" → "datavalue": { "value": { "time": "+1807-07-04T00:00:00Z",
-* P119 È il luogo di sepoltura, datatype: "wikibase-item" → punta a Q845310 (Caprera) → "datavalue": { "value": { "id": "Q845310" } }
+Examples with [Garibaldi - Q359](https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q539&format=json)
+* P569 Is the date of birth datatype": "time" → "datavalue": { "value": { "time": "+1807-07-04T00:00:00Z",
+* P119 Is the place of burial, datatype: "wikibase-item" → points to Q845310 (Caprera) → "datavalue": { "value": { "id": "Q845310" } }
 
-Esempi con [Arzachena](https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q186538&format=json)
-* P625 - Coordinate (poi ci sono anche le souternmost, etc.)
+Examples with [Arzachena](https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q186538&format=json)
+* P625 - Coordinates (then there are also southernmost, etc.)
 
+Instead of making a query per page, or a bulk query, you can download the:
+List of all [Semantic Units - 86GB](https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2)
 
-Invece che fare una query per pagina, o un bulk, si può scaricare la:
-Lista di tutte le [Unità Semantiche - 86GB](https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2)
-
-Ecco l'[indice](https://dumps.wikimedia.org/wikidatawiki/entities/).
+Here's the [index](https://dumps.wikimedia.org/wikidatawiki/entities/):
 
     latest-all.json.bz2      - 86.4 GB
     latest-all.json.gz       - 131.2 GB
@@ -86,29 +89,25 @@ Ecco l'[indice](https://dumps.wikimedia.org/wikidatawiki/entities/).
     latest-truthy.nt.bz2     - 37.2 GB
     latest-truthy.nt.gz      - 61.4 GB
 
-* .json: dati in formato JSON, più facile da processare programmaticamente
-* .nt: formato N-Triples, ottimo per RDF/linked data
-* .ttl: formato Turtle, più leggibile di N-Triples, sempre per RDF
-* latest-all: contiene tutti i dati di Wikidata
-* latest-lexemes: contiene solo i dati lessicografici (dizionario)
-* latest-truthy: contiene solo le dichiarazioni "veritiere" attuali, senza storico e metadati
-* .bz2 vs .gz: sono due diversi metodi di compressione, bz2 generalmente comprime meglio ma è più lento
+* .json: data in JSON format, easier to process programmatically
+* .nt: N-Triples format, great for RDF/linked data
+* .ttl: Turtle format, more readable than N-Triples, still for RDF
+* latest-all: contains all Wikidata data
+* latest-lexemes: contains only lexicographical data (dictionary)
+* latest-truthy: contains only current "truthful" statements, without history and metadata
+* .bz2 vs .gz: these are two different compression methods, bz2 generally compresses better but is slower
 
+## Attempts to Reduce Dump Size
 
-## Tentativi di ridurre le dimensioni del dump
+The ideas are:
+* Use only Italian Wikipedia and filter manually (for example all highways, championships, ...)
+* Use only SimpleWiki (which is already a selection in itself)
+* Retrieve only desired articles, for example those in Italian tagged as vital
 
-Le idee sono:
-* Utilizzare solo Wikipedia in Italiano e filtrare a mano (ad esempio tutte le autostrade, gli scudetti, ...)
-* Utilizzare solo SimpleWIki (che di per se è già una selezione)
-* Recuperare solo gli articoli desiderati, ad esempio quelli in italiano taggati come vital
+  SELECT ?article ?articleLabel WHERE {
+  ?article wdt:P31 wd:Q13442814. # Filter for Wikipedia articles
+  ?article wdt:P7937 wd:Q21988530. # Tag Vital Articles
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "it". }
+  }
 
-
-    SELECT ?article ?articleLabel WHERE {
-    ?article wdt:P31 wd:Q13442814. # Filtra per articoli di Wikipedia
-    ?article wdt:P7937 wd:Q21988530. # Tag Vital Articles
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "it". }
-    }
-
-
-[Query simile corrispondente.](https://query.wikidata.org/#SELECT%20%3Farticle%20%3FarticleLabel%20WHERE%20%7B%0A%20%20%3Farticle%20wdt%3AP31%20wd%3AQ13442814.%20%23%20Filtra%20per%20articoli%20di%20Wikipedia%0A%20%20%3Farticle%20wdt%3AP7937%20wd%3AQ21988530.%20%23%20Tag%20Vital%20Articles%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D)
-
+[Corresponding similar query.](https://query.wikidata.org/#SELECT%20%3Farticle%20%3FarticleLabel%20WHERE%20%7B%0A%20%20%3Farticle%20wdt%3AP31%20wd%3AQ13442814.%20%23%20Filtra%20per%20articoli%20di%20Wikipedia%0A%20%20%3Farticle%20wdt%3AP7937%20wd%3AQ21988530.%20%23%20Tag%20Vital%20Articles%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D)
