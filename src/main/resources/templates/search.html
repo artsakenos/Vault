@@ -17,7 +17,7 @@
                 <option th:each="source : ${sources}"
                         th:value="${source}"
                         th:text="${source}"
-                        th:selected="${source == param.source}"></option>
+                        th:selected="${source == source_selected}"></option>
             </select>
             <input type="text"
                    name="query"
@@ -30,7 +30,7 @@
 
     <!-- Search Results (displayed only if there are results) -->
     <div th:if="${results != null}">
-        <h2 class="mb-4">Results</h2>
+        <!--<h2 class="mb-4">Results</h2>-->
         <p class="mb-4">
             <strong>Query:</strong> <span th:text="${query}"></span><br>
             <!-- FTS Keywords: [[${ftsKeywords}]] -->

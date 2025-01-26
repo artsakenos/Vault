@@ -24,6 +24,9 @@ public class ParserWikiService {
     @Autowired
     private SqliteService sqlite;
 
+    /**
+     * It can be #idle, #inprogress, #completed.
+     */
     @Getter
     private String parserStatus = "#idle";
 
@@ -58,7 +61,7 @@ public class ParserWikiService {
 
         parser.parseFile();
         log.info("Total articles processed: {}. Article Rejected: {}", counter[0], counter[1]);
-        parserStatus = "#idle. Parsing completed at " + Instant.now() + " for " + path + "\n" + " C" + counter[0] + "/R" + counter[1];
+        parserStatus = "#completed. Parsing completed at " + Instant.now() + " for " + path + "\n" + " C" + counter[0] + "/R" + counter[1];
     }
 
     private boolean parseLine(String line) {

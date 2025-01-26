@@ -15,8 +15,8 @@ public class LogService {
     @Autowired
     private UserDataRepository userSearchDataRepository;
 
-    public void logUserData(HttpServletRequest request, String query) {
-        UserData userSearchData = new UserData(request, query);
+    public void logUserData(HttpServletRequest request, String userName, String userRole, String query) {
+        UserData userSearchData = new UserData(request, userName, userRole, query);
         userSearchDataRepository.save(userSearchData);
     }
 

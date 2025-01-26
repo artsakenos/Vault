@@ -11,7 +11,7 @@ a digital sanctuary ensuring information remains accessible, regardless of exter
 - Implement multiple storage options:
     * Raspberry Pi-based portable server
     * USB drive with encrypted content
-    * Micro SD card with ruggedized casing
+    * Micro SD card with rugged casing
 
 ### 2. 🔒 Enhanced Security Features
 - Add multi-layer encryption

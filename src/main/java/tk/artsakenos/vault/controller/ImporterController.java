@@ -28,7 +28,11 @@ public class ImporterController {
     public static final String UPLOAD_PATH = "db/uploads/";
 
     @GetMapping("/import")
-    public String showImporterPage() {
+    public String showImporterPage(Model model) {
+        String status = parserWikiService.getParserStatus();
+        if (!status.startsWith("#idle")) {
+            model.addAttribute("message", status);
+        }
         return "importer";
     }
 

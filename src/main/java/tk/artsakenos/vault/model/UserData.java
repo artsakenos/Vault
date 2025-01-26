@@ -17,6 +17,12 @@ public class UserData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_name", nullable = true)
+    private String userName;
+
+    @Column(name = "user_role", nullable = true)
+    private String userRole;
+
     @Column(name = "query", nullable = true)
     private String query;
 
@@ -50,7 +56,7 @@ public class UserData {
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public UserData(HttpServletRequest request, String query) {
+    public UserData(HttpServletRequest request, String userName, String userRole, String query) {
         setUserAgent(request.getHeader("User-Agent"));
         setReferrer(request.getHeader("Referer"));
         setIpAddress(request.getRemoteAddr());
@@ -60,6 +66,8 @@ public class UserData {
         setProtocol(request.getProtocol());
         setServerName(request.getServerName());
         setServerPort(request.getServerPort());
+        setUserName(userName);
+        setUserRole(userRole);
         setQuery(query);
     }
 }

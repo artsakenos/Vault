@@ -3,6 +3,9 @@ package tk.artsakenos.vault.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,8 +39,20 @@ public class SearchController {
     public String performSearch(
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "source", required = false) String source,
-                                Model model, HttpServletRequest request) {
-        logService.logUserData(request, query);
+            Model model, HttpServletRequest request) {
+
+        // Get the logged-in user's information
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName(); // Fetches the username of the logged-in user
+        String userRole = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("ROLE_UNKNOWN"); // Fetches the user's role
+
+        logService.logUserData(request, userName, userRole, query);
+        model.addAttribute("sources", sqliteService.getAvailableSources());
+        model.addAttribute("source_selected", source);
+        model.addAttribute("userName", userName);
         if (query == null || query.trim().isEmpty()) {
             return "search";
         }
@@ -49,7 +64,7 @@ public class SearchController {
             ftsKeywords = ftsKeywords.replaceAll("'", "\"");
             // ftsKeywords += " AND article_source:scwiki";
         }
-        if (source != null && !source.trim().isEmpty()) {
+        if (!source.trim().isEmpty()) {
             ftsKeywords += " AND article_source:" + source;
         }
 
@@ -57,7 +72,6 @@ public class SearchController {
         chronometer.start();
         List<Map<String, Object>> results = sqliteService.queryVault(ftsKeywords);
         long duration = chronometer.getTimePassedMillisecs();
-        model.addAttribute("sources", sqliteService.getAvailableSources());
         model.addAttribute("query", query);
         model.addAttribute("results", results);
         model.addAttribute("duration", duration);

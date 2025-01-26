@@ -36,7 +36,7 @@ public class AIService {
                         "role": "user"
                     }
                 ],
-                "model": "llama-3.1-70b-versatile",
+                "model": "llama-3.3-70b-versatile",
                 "stream": false,
                 "temperature": 1,
                 "top_p": 1
@@ -50,7 +50,7 @@ public class AIService {
 
     public String retrieveKeywords(String query) {
         String jsonQuestion = Helper.jsonizeString(query);
-        String jsonSystem = Helper.jsonizeString(Helper.getFromResources("/prompts/prompt_keword_extractor.txt"));
+        String jsonSystem = Helper.jsonizeString(Helper.getFromResources("/prompts/prompt_keyword_extractor.txt"));
         String jsonBody = GROQ_JSON_WRAPPER
                 .replaceAll("SYSTEM", jsonSystem)
                 .replaceAll("CONTENT", jsonQuestion);
